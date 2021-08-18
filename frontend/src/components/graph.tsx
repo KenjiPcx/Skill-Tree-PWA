@@ -25,6 +25,22 @@ function GraphCanvas() {
     edges: {
       color: "#000000",
     },
+    groups: {
+      categoricalLabel: {
+        shape: "dot",
+        size: 6,
+        color: {
+          background: "#ff0000",
+          border: "#3c3c3c",
+          highlight: {
+            background: "#07f968",
+            border: "#3c3c3c",
+          },
+        },
+        borderWidth: 2,
+        borderWidthSelected: 2,
+      },
+    },
   };
 
   const events: graphEvents = {
