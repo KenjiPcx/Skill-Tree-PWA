@@ -1,22 +1,10 @@
 import React, { useMemo } from "react";
 import Graph, { graphEvents } from "react-graph-vis";
+import graphData from "./GraphData";
+import GraphDataTransformer from "./GraphDataTransformer";
 
 function GraphCanvas() {
-  const graph = {
-    nodes: [
-      { id: 1, label: "Node 1", title: "node 1 tootip text" },
-      { id: 2, label: "Node 2", title: "node 2 tootip text" },
-      { id: 3, label: "Node 3", title: "node 3 tootip text" },
-      { id: 4, label: "Node 4", title: "node 4 tootip text" },
-      { id: 5, label: "Node 5", title: "node 5 tootip text" },
-    ],
-    edges: [
-      { from: 1, to: 2 },
-      { from: 1, to: 3 },
-      { from: 2, to: 4 },
-      { from: 2, to: 5 },
-    ],
-  };
+  const graph = GraphDataTransformer(graphData);
 
   const options = {
     layout: {
@@ -26,19 +14,66 @@ function GraphCanvas() {
       color: "#000000",
     },
     groups: {
-      categoricalLabel: {
-        shape: "dot",
+      "Category Label": {
+        shape: "box",
+        shapeProperties: {
+          borderRadius: 15,
+        },
         size: 6,
         color: {
-          background: "#ff0000",
+          background: "#7C2FEB",
           border: "#3c3c3c",
           highlight: {
-            background: "#07f968",
+            background: "#7F39FB",
             border: "#3c3c3c",
           },
         },
-        borderWidth: 2,
+        font: {
+          color: "#ffffff",
+        },
+        borderWidth: 0,
         borderWidthSelected: 2,
+        margin: {
+          top: 5,
+          bottom: 5,
+          left: 10,
+          right: 10,
+        },
+      },
+      "Subcategory Label": {
+        shape: "box",
+        shapeProperties: {
+          borderRadius: 15,
+        },
+        size: 6,
+        color: {
+          background: "#BB86FC",
+          border: "#3c3c3c",
+          highlight: {
+            background: "#BB86FC",
+            border: "#3c3c3c",
+          },
+        },
+        font: {
+          color: "#ffffff",
+        },
+        borderWidth: 0,
+        borderWidthSelected: 2,
+        margin: {
+          top: 5,
+          bottom: 5,
+          left: 10,
+          right: 10,
+        },
+      },
+      Image: {
+        shape: "circularImage",
+        brokenImage: "https://bitsofco.de/content/images/2018/12/broken-1.png",
+        image: "https://bitsofco.de/content/images/2018/12/broken-1.png",
+        color: {
+          background: "#FFFFFF",
+        },
+        borderWidth: 2,
       },
     },
   };
@@ -46,6 +81,7 @@ function GraphCanvas() {
   const events: graphEvents = {
     select: function (event: any) {
       var { nodes, edges } = event;
+      console.log(event);
     },
   };
 
@@ -60,16 +96,7 @@ function GraphCanvas() {
     );
   }, [graph]);
 
-  return (
-    <div className="test">
-      <Graph
-        key={Math.random()}
-        graph={graph}
-        options={options}
-        events={events}
-      />
-    </div>
-  );
+  return <div className="test">{displayGraph}</div>;
 }
 
 export default GraphCanvas;
