@@ -1,37 +1,21 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
-import db from "../firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
-import graphData from "./GraphData";
-import GraphDataTransformer from "./GraphDataTransformer";
 
-function GraphCanvas() {
-  const isMounted = useRef<boolean | null>(null);
-  const [loading, setLoading] = useState(true);
+interface GraphCanvasProps {
+  graph: any;
+  network: any;
+  setNetwork: React.Dispatch<any>;
+  setSelectedNode: React.Dispatch<any>;
+}
+
+function GraphCanvas({
+  graph,
+  network,
+  setNetwork,
+  setSelectedNode,
+}: GraphCanvasProps) {
   const graphRef = useRef(null);
-  const [network, setNetwork] = useState<any | null>(null);
-  const [graph, setGraph] = useState<any | null>(null);
-  const [nodeCtr, setNodeCtr] = useState(0);
-
-  useEffect(() => {
-    console.log("rendered")
-    isMounted.current = true;
-    const unsub = onSnapshot(collection(db, "nodes"), (querySnapshot) => {
-      const skills: any[] = [];
-      querySnapshot.forEach((doc) => {
-        skills.push({ id: doc.id, ...doc.data() });
-      });
-      if (isMounted) setGraph(GraphDataTransformer(skills));
-      console.log("redrew");
-    });
-    if (isMounted) setLoading(false);
-
-    return () => {
-      unsub();
-      isMounted.current = false;
-    };
-  }, []);
 
   const options = {
     layout: {
@@ -108,12 +92,12 @@ function GraphCanvas() {
   const events: any = {
     select: function (event: any) {
       var { nodes, edges } = event;
-      console.log(graph)
+      setSelectedNode(nodes[0]);
     },
   };
 
   const displayGraph = useMemo(() => {
-    if (!loading) {
+    if (graph) {
       return (
         <Graph
           ref={graphRef}
@@ -136,17 +120,17 @@ function GraphCanvas() {
         maxZoomLevel: 1,
         animation: true,
       });
-      if (nodeCtr === 0) {
-        setNodeCtr(graphData.length);
-      } else {
-        setTimeout(() => {
-          network.fit({
-            nodes: ["Origin"],
-            minZoomLevel: 1,
-            animation: true,
-          });
-        }, 1500);
-      }
+      // if (nodeCtr === 0) {
+      //   setNodeCtr(graphData.length);
+      // } else {
+      setTimeout(() => {
+        network.fit({
+          nodes: ["Origin"],
+          minZoomLevel: 1,
+          animation: true,
+        });
+      }, 1500);
+      // }
     }
   }, [network]);
 

@@ -7,7 +7,11 @@ import ZoomOutIcon from "@material-ui/icons/ZoomOut";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import Tooltip from "@material-ui/core/Tooltip";
 
-const TopFabs = () => {
+interface TopFacsProps {
+  network: any;
+}
+
+const TopFabs = ({ network }: TopFacsProps) => {
   const fabSpacing = "15px";
   const StyledFabsContainer = styled("div")({
     position: "absolute",

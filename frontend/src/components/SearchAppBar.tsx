@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { styled, alpha } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -52,10 +52,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function SearchAppBar() {
-  const [search, setSearch] = useState("");
-  console.log(search)
+interface SearchAppBarProps {
+  search: string;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
+}
 
+export default function SearchAppBar({ search, setSearch }: SearchAppBarProps) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed">

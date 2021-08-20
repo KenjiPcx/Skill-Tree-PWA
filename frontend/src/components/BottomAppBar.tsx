@@ -1,6 +1,5 @@
 import React from "react";
 import RadialSpeedDial from "./RadialSpeedDial";
-import { styled } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,7 +10,11 @@ import ListIcon from "@material-ui/icons/List";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Tooltip from "@material-ui/core/Tooltip";
 
-export default function BottomAppBar() {
+interface BottomAppBarProps {
+  selectedNode: any;
+}
+
+export default function BottomAppBar({ selectedNode }: BottomAppBarProps) {
   return (
     <>
       <AppBar position="fixed" color="primary" sx={{ top: "auto", bottom: 0 }}>
