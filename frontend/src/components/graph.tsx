@@ -1,10 +1,37 @@
-import React, { useMemo } from "react";
-import Graph, { graphEvents } from "react-graph-vis";
+import React, { useMemo, useState, useRef, useEffect } from "react";
+import db from "../firebase";
+import { collection, onSnapshot } from "firebase/firestore";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Graph from "react-graph-vis";
 import graphData from "./GraphData";
 import GraphDataTransformer from "./GraphDataTransformer";
 
 function GraphCanvas() {
-  const graph = GraphDataTransformer(graphData);
+  const isMounted = useRef<boolean | null>(null);
+  const [loading, setLoading] = useState(true);
+  const graphRef = useRef(null);
+  const [network, setNetwork] = useState<any | null>(null);
+  const [graph, setGraph] = useState<any | null>(null);
+  const [nodeCtr, setNodeCtr] = useState(0);
+
+  useEffect(() => {
+    console.log("rendered")
+    isMounted.current = true;
+    const unsub = onSnapshot(collection(db, "nodes"), (querySnapshot) => {
+      const skills: any[] = [];
+      querySnapshot.forEach((doc) => {
+        skills.push({ id: doc.id, ...doc.data() });
+      });
+      if (isMounted) setGraph(GraphDataTransformer(skills));
+      console.log("redrew");
+    });
+    if (isMounted) setLoading(false);
+
+    return () => {
+      unsub();
+      isMounted.current = false;
+    };
+  }, []);
 
   const options = {
     layout: {
@@ -78,25 +105,57 @@ function GraphCanvas() {
     },
   };
 
-  const events: graphEvents = {
+  const events: any = {
     select: function (event: any) {
       var { nodes, edges } = event;
-      console.log(event);
+      console.log(graph)
     },
   };
 
+  // useEffect(() => {
+  //   console.log(graph);
+  //   network?.redraw();
+  // }, [graph]);
+
   const displayGraph = useMemo(() => {
-    return (
-      <Graph
-        key={Math.random()}
-        graph={graph}
-        options={options}
-        events={events}
-      />
-    );
+    if (!loading) {
+      return (
+        <Graph
+          ref={graphRef}
+          key={Math.random()}
+          graph={graph}
+          options={options}
+          events={events}
+          getNetwork={(network) => setNetwork(network)}
+        />
+      );
+    }
+    return <CircularProgress />;
   }, [graph]);
 
-  return <div className="test">{displayGraph}</div>;
+  useEffect(() => {
+    if (network) {
+      network.fit({
+        nodes: ["Kenji"],
+        minZoomLevel: 0.5,
+        maxZoomLevel: 1,
+        animation: true,
+      });
+      if (nodeCtr === 0) {
+        setNodeCtr(graphData.length);
+      } else {
+        setTimeout(() => {
+          network.fit({
+            nodes: ["Kenji"],
+            minZoomLevel: 1,
+            animation: true,
+          });
+        }, 1500);
+      }
+    }
+  }, [network]);
+
+  return <div className="graphContainer">{displayGraph}</div>;
 }
 
 export default GraphCanvas;

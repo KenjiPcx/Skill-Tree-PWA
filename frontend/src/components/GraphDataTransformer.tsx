@@ -15,26 +15,40 @@ const generateNode = (data: Skill) => {
   return node;
 };
 
-const generateEdge = (data: Skill) => {
+const generateEdge = (data: Skill, graphData: Skill[]) => {
   return {
-    from: data.parentId,
+    from: getIdByName(data.parent, graphData),
+    // from : data.parent,
     to: data.id,
   };
 };
 
+const getIdByName = (parent: String, graphData: Skill[]) => {
+  if (parent === "Kenji") {
+    return "Kenji";
+  }
+  const res = graphData.filter((data) => data.name === parent);
+  if (res.length !== 0) {
+    return res[0].id;
+  }
+  return "Orphanage";
+};
+
 const GraphDataTransformer = (graphData: any[]) => {
   const originNode = {
-    id: 0,
+    id: "Kenji",
     label: "Kenji",
     title: "You",
+    shape: "circularImage",
     group: "Image",
     size: 35,
     image: KenjiImg,
   };
   const nodes = graphData.map((data) => generateNode(data));
+  const edges = graphData.map((data) => generateEdge(data, graphData));
   return {
     nodes: [originNode, ...nodes],
-    edges: graphData.map((data) => generateEdge(data)),
+    edges: edges,
   };
 };
 
