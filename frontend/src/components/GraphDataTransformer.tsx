@@ -24,8 +24,8 @@ const generateEdge = (data: Skill, graphData: Skill[]) => {
 };
 
 const getIdByName = (parent: String, graphData: Skill[]) => {
-  if (parent === "Kenji") {
-    return "Kenji";
+  if (parent === "Origin") {
+    return "Origin";
   }
   const res = graphData.filter((data) => data.name === parent);
   if (res.length !== 0) {
@@ -36,7 +36,7 @@ const getIdByName = (parent: String, graphData: Skill[]) => {
 
 const GraphDataTransformer = (graphData: any[]) => {
   const originNode = {
-    id: "Kenji",
+    id: "Origin",
     label: "Kenji",
     title: "You",
     shape: "circularImage",

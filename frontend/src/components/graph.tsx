@@ -112,11 +112,6 @@ function GraphCanvas() {
     },
   };
 
-  // useEffect(() => {
-  //   console.log(graph);
-  //   network?.redraw();
-  // }, [graph]);
-
   const displayGraph = useMemo(() => {
     if (!loading) {
       return (
@@ -136,7 +131,7 @@ function GraphCanvas() {
   useEffect(() => {
     if (network) {
       network.fit({
-        nodes: ["Kenji"],
+        nodes: ["Origin"],
         minZoomLevel: 0.5,
         maxZoomLevel: 1,
         animation: true,
@@ -146,7 +141,7 @@ function GraphCanvas() {
       } else {
         setTimeout(() => {
           network.fit({
-            nodes: ["Kenji"],
+            nodes: ["Origin"],
             minZoomLevel: 1,
             animation: true,
           });
