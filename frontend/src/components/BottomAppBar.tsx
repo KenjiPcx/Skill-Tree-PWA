@@ -9,15 +9,46 @@ import BubbleChartIcon from "@material-ui/icons/BubbleChart";
 import ListIcon from "@material-ui/icons/List";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Tooltip from "@material-ui/core/Tooltip";
+import { useSpring, animated } from "react-spring";
+import { styled } from "@material-ui/core/styles";
 
 interface BottomAppBarProps {
   selectedNode: any;
+  hideUI: boolean;
 }
 
-export default function BottomAppBar({ selectedNode }: BottomAppBarProps) {
+const AnimatedAppBar = animated(AppBar);
+
+const NotchMargin = styled("div")({
+  width: "70px",
+  height: "35px",
+  position: "absolute",
+  zIndex: 1,
+  top: 0,
+  left: 0,
+  right: 0,
+  margin: "0 auto",
+  backgroundColor: "#FFFFFF",
+  borderRadius: "0 0 35px 35px",
+});
+
+export default function BottomAppBar({
+  selectedNode,
+  hideUI,
+}: BottomAppBarProps) {
+  const botTranslation = useSpring({
+    transform: hideUI ? `translateY(100px)` : "translateY(0px)",
+    // opacity: !hideUI,
+  });
+
   return (
     <>
-      <AppBar position="fixed" color="primary" sx={{ top: "auto", bottom: 0 }}>
+      <AnimatedAppBar
+        position="fixed"
+        color="primary"
+        sx={{ top: "auto", bottom: 0, zIndex: 1 }}
+        style={botTranslation}
+      >
         <Toolbar>
           <Tooltip title="Knowledge Network">
             <IconButton color="inherit" aria-label="Knowledge Network">
@@ -30,7 +61,8 @@ export default function BottomAppBar({ selectedNode }: BottomAppBarProps) {
               <BarChartIcon />
             </IconButton>
           </Tooltip>
-          <RadialSpeedDial />
+          {/* <RadialSpeedDial hideUI={hideUI} /> */}
+          <NotchMargin />
           <Box sx={{ flexGrow: 3 }} />
           <Tooltip title="Learning List">
             <IconButton color="inherit" aria-label="Learning List">
@@ -44,7 +76,8 @@ export default function BottomAppBar({ selectedNode }: BottomAppBarProps) {
             </IconButton>
           </Tooltip>
         </Toolbar>
-      </AppBar>
+      </AnimatedAppBar>
+      <RadialSpeedDial hideUI={hideUI} />
     </>
   );
 }

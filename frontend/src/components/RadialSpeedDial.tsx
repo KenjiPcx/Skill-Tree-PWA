@@ -9,59 +9,63 @@ import { Tooltip } from "@material-ui/core";
 
 import { useSpring, animated } from "react-spring";
 
-const RadialSpeedDial = () => {
+const FabContainer = styled("div")({
+  position: "absolute",
+  zIndex: 10,
+  bottom: "6.5%",
+  left: 0,
+  right: 0,
+  margin: "0 auto",
+});
+
+const StyledFab = styled(Fab)({
+  position: "absolute",
+  zIndex: 10,
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  margin: "auto auto",
+});
+
+const yOffset = 30;
+const xOffset = yOffset * 1.73;
+const AnimatedFab = animated(StyledFab);
+interface RadialSpeedDialProps {
+  hideUI: boolean;
+}
+
+const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
   const [showSpeedDial, setShowSpeedDial] = useState(false);
 
   const toggleSpeedDial = () => {
     setShowSpeedDial(!showSpeedDial);
   };
 
-  const StyledFab = styled(Fab)({
-    position: "absolute",
-    zIndex: 10,
-    top: -30,
-    left: 0,
-    right: 0,
-    margin: "0 auto",
-  });
-
-  const NotchMargin = styled("div")({
-    width: "70px",
-    height: "35px",
-    position: "absolute",
-    zIndex: 1,
-    top: -2,
-    left: 0,
-    right: 0,
-    margin: "0 auto",
-    backgroundColor: "#FFFFFF",
-    borderRadius: "0 0 35px 35px",
-  });
-
-  const yOffset = 28;
-  const xOffset = yOffset * 1.73;
-  const AnimatedFab = animated(StyledFab);
   const leftFabTranslation = useSpring({
     transform: showSpeedDial
       ? `translate(-${xOffset}px, -${yOffset}px)`
       : "translate(0px, 0px)",
   });
+
   const middleFabTranslation = useSpring({
     transform: showSpeedDial
       ? `translate(-${0}px, -${Math.sqrt(xOffset ** 2 + yOffset ** 2)}px)`
       : "translate(0px, 0px)",
   });
+
   const rightFabTranslation = useSpring({
     transform: showSpeedDial
       ? `translate(${xOffset}px, -${yOffset}px)`
       : "translate(0px, 0px)",
   });
+
   const mainFabRotation = useSpring({
     transform: showSpeedDial ? `rotate(225deg)` : "rotate(0deg)",
   });
 
   return (
-    <>
+    <FabContainer>
       <Tooltip title="Remove Node">
         <AnimatedFab
           size="small"
@@ -98,8 +102,6 @@ const RadialSpeedDial = () => {
         </AnimatedFab>
       </Tooltip>
 
-      <NotchMargin />
-
       <Tooltip title="Node Options">
         <AnimatedFab
           style={mainFabRotation}
@@ -110,7 +112,7 @@ const RadialSpeedDial = () => {
           <AddIcon fontSize="large" />
         </AnimatedFab>
       </Tooltip>
-    </>
+    </FabContainer>
   );
 };
 

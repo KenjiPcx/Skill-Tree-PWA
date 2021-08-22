@@ -2,7 +2,13 @@
 import { initializeApp } from 'firebase/app';
 
 // Add the Firebase products that you want to use
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import graphData from "./graphData.js";
 
 import dotenv from 'dotenv'
@@ -24,8 +30,8 @@ const db = getFirestore();
 
 const addNodeToDb = async (nodeData) => {
   try {
-    const docRef = await addDoc(collection(db, "nodes"), nodeData);
-    console.log("Document written with ID: ", docRef.id);
+    await setDoc(doc(db, "nodes", nodeData.name), nodeData);
+    console.log("Document written with ID: ", nodeData.name);
   } catch (e) {
     console.error("Error adding document: ", e);
   }

@@ -4,10 +4,10 @@ import KenjiImg from "../assets/kenji.png";
 
 const generateNode = (data: Skill) => {
   const node = {
-    id: data.id,
+    id: data.name,
     group: data.group,
     label: data.name,
-    title: `Used in ${data.usageFrequency} projects.`,
+    title: `Used in ${data.usedFrequency} projects.`,
   };
   if (data.imageURL) {
     return { ...node, image: data.imageURL };
@@ -17,24 +17,23 @@ const generateNode = (data: Skill) => {
 
 const generateEdge = (data: Skill, graphData: Skill[]) => {
   return {
-    from: getIdByName(data.parent, graphData),
-    // from : data.parent,
-    to: data.id,
+    from: data.parent,
+    to: data.name,
   };
 };
 
-const getIdByName = (parent: String, graphData: Skill[]) => {
-  if (parent === "Origin") {
-    return "Origin";
-  }
-  const res = graphData.filter((data) => data.name === parent);
-  if (res.length !== 0) {
-    return res[0].id;
-  }
-  return "Orphanage";
-};
+// const getIdByName = (parent: String, graphData: Skill[]) => {
+//   if (parent === "Origin") {
+//     return "Origin";
+//   }
+//   const res = graphData.filter((data) => data.name === parent);
+//   if (res.length !== 0) {
+//     return res[0].id;
+//   }
+//   return "Orphanage";
+// };
 
-const GraphDataTransformer = (graphData: any[]) => {
+const graphDataTransformer = (graphData: any[]) => {
   const originNode = {
     id: "Origin",
     label: "Kenji",
@@ -52,4 +51,4 @@ const GraphDataTransformer = (graphData: any[]) => {
   };
 };
 
-export default GraphDataTransformer;
+export default graphDataTransformer;

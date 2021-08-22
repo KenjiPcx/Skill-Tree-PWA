@@ -5,6 +5,7 @@ import Graph from "react-graph-vis";
 interface GraphCanvasProps {
   graph: any;
   network: any;
+  focusedNode: string;
   setNetwork: React.Dispatch<any>;
   setSelectedNode: React.Dispatch<any>;
 }
@@ -12,6 +13,7 @@ interface GraphCanvasProps {
 function GraphCanvas({
   graph,
   network,
+  focusedNode,
   setNetwork,
   setSelectedNode,
 }: GraphCanvasProps) {
@@ -93,6 +95,7 @@ function GraphCanvas({
     select: function (event: any) {
       var { nodes, edges } = event;
       setSelectedNode(nodes[0]);
+      console.log(nodes)
     },
   };
 
@@ -111,26 +114,23 @@ function GraphCanvas({
     }
     return <CircularProgress />;
   }, [graph]);
-
+ 
   useEffect(() => {
+    console.log("Focused Node", focusedNode)
     if (network) {
       network.fit({
-        nodes: ["Origin"],
+        nodes: [focusedNode],
         minZoomLevel: 0.5,
         maxZoomLevel: 1,
         animation: true,
       });
-      // if (nodeCtr === 0) {
-      //   setNodeCtr(graphData.length);
-      // } else {
       setTimeout(() => {
         network.fit({
-          nodes: ["Origin"],
+          nodes: [focusedNode],
           minZoomLevel: 1,
           animation: true,
         });
       }, 1500);
-      // }
     }
   }, [network]);
 

@@ -8,7 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
-import { Tooltip } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+import { useSpring, animated } from "react-spring";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -17,10 +18,11 @@ const Search = styled("div")(({ theme }) => ({
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
+  marginRight: theme.spacing(2),
   marginLeft: 0,
   width: "100%",
   [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
+    marginLeft: theme.spacing(3),
     width: "auto",
   },
 }));
@@ -43,24 +45,35 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
+    [theme.breakpoints.up("md")]: {
+      width: "20ch",
     },
   },
 }));
 
+const AnimatedAppBar = animated(AppBar);
+
 interface SearchAppBarProps {
+  hideUI: boolean;
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
+  handleSearch: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-export default function SearchAppBar({ search, setSearch }: SearchAppBarProps) {
+export default function SearchAppBar({
+  hideUI,
+  search,
+  setSearch,
+  handleSearch,
+}: SearchAppBarProps) {
+  const topTranslation = useSpring({
+    transform: hideUI ? `translateY(-100px)` : "translateY(0px)",
+    // opacity: !hideUI,
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AnimatedAppBar position="absolute" style={topTranslation}>
         <Toolbar>
           <Tooltip title="Menu">
             <IconButton
@@ -72,6 +85,7 @@ export default function SearchAppBar({ search, setSearch }: SearchAppBarProps) {
                 flexGrow: 1,
                 flexBasis: "10%",
               }}
+              onClick={() => console.log("Clicked")}
             >
               <MenuIcon />
             </IconButton>
@@ -88,19 +102,24 @@ export default function SearchAppBar({ search, setSearch }: SearchAppBarProps) {
           >
             Skill Tree
           </Typography>
-          <Search sx={{ flexGrow: 1, flexBasis: "45%" }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ "aria-label": "search" }}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </Search>
+          <form
+            style={{ flexGrow: 1, flexBasis: "45%" }}
+            onSubmit={handleSearch}
+          >
+            <Search>
+              <SearchIconWrapper onClick={() => console.log(search)}>
+                <SearchIcon onClick={() => console.log(search)} />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </Search>
+          </form>
         </Toolbar>
-      </AppBar>
+      </AnimatedAppBar>
     </Box>
   );
 }
