@@ -1,4 +1,6 @@
 import React from "react";
+
+// Components
 import RadialSpeedDial from "./RadialSpeedDial";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -12,9 +14,15 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { useSpring, animated } from "react-spring";
 import { styled } from "@material-ui/core/styles";
 
+// Graph Data
+import graphDataTransformer from "../utils/graphDataTransformer";
+import generateStatsNodes from "../utils/generateStatsNodes";
 interface BottomAppBarProps {
-  selectedNode: any;
   hideUI: boolean;
+  selectedNode: any;
+  skillsData: Map<string, any>;
+  setFocusedNode: React.Dispatch<React.SetStateAction<string>>;
+  setGraph: React.Dispatch<any>;
 }
 
 const AnimatedAppBar = animated(AppBar);
@@ -33,13 +41,25 @@ const NotchMargin = styled("div")({
 });
 
 export default function BottomAppBar({
-  selectedNode,
   hideUI,
+  selectedNode,
+  skillsData,
+  setFocusedNode,
+  setGraph,
 }: BottomAppBarProps) {
   const botTranslation = useSpring({
     transform: hideUI ? `translateY(100px)` : "translateY(0px)",
-    // opacity: !hideUI,
   });
+
+  const resetInjections = () => {
+    const skillsArr = Array.from(skillsData.values());
+    setFocusedNode("Origin");
+    setGraph(graphDataTransformer(skillsArr));
+  };
+
+  const handleInjectStats = () => {
+    setGraph(generateStatsNodes(skillsData));
+  };
 
   return (
     <>
@@ -51,17 +71,24 @@ export default function BottomAppBar({
       >
         <Toolbar>
           <Tooltip title="Knowledge Network">
-            <IconButton color="inherit" aria-label="Knowledge Network">
+            <IconButton
+              color="inherit"
+              aria-label="Knowledge Network"
+              onClick={resetInjections}
+            >
               <BubbleChartIcon />
             </IconButton>
           </Tooltip>
           <Box sx={{ flexGrow: 1 }} />
           <Tooltip title="Learning Stats">
-            <IconButton color="inherit" aria-label="Learning Stats">
+            <IconButton
+              color="inherit"
+              aria-label="Learning Stats"
+              onClick={handleInjectStats}
+            >
               <BarChartIcon />
             </IconButton>
           </Tooltip>
-          {/* <RadialSpeedDial hideUI={hideUI} /> */}
           <NotchMargin />
           <Box sx={{ flexGrow: 3 }} />
           <Tooltip title="Learning List">

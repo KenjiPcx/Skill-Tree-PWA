@@ -1,6 +1,6 @@
 import graphData from "./testData";
 
-const pushChildrenNodes = (nodes: any[], search: string, returnArr: any[]) => {
+export const pushChildrenNodes = (nodes: any[], search: string, returnArr: any[]) => {
   let nodesData = nodes;
   const res = nodesData.filter(
     (data) => data.parent.toLowerCase() === search.toLowerCase()
@@ -8,9 +8,9 @@ const pushChildrenNodes = (nodes: any[], search: string, returnArr: any[]) => {
   if (res.length === 0) {
     return;
   } else {
+    nodesData = nodesData.filter((node) => !res.includes(node));
     res.forEach((data) => {
       returnArr.push(data);
-      nodesData = nodesData.filter((node) => !res.includes(node));
       pushChildrenNodes(nodesData, data.name, returnArr);
     });
   }
@@ -27,6 +27,6 @@ const filterNodesData = (nodes: any[], search: string) => {
   return returnArr;
 };
 
-console.log("final", filterNodesData(graphData, "Game Dev"));
+// console.log("final", filterNodesData(graphData, "Game Dev"));
 
 export default filterNodesData;

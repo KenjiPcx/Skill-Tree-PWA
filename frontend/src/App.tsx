@@ -11,7 +11,7 @@ import BottomAppBar from "./components/BottomAppBar";
 
 import db from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import graphDataTransformer from "./components/GraphDataTransformer";
+import graphDataTransformer from "./utils/graphDataTransformer";
 
 import filterNodesData from "./utils/filterNodesData";
 
@@ -99,7 +99,13 @@ function App() {
           setNetwork={setNetwork}
           setSelectedNode={setSelectedNode}
         />
-        <BottomAppBar selectedNode={selectedNode} hideUI={hideUI} />
+        <BottomAppBar
+          hideUI={hideUI}
+          selectedNode={selectedNode}
+          skillsData={skillsData}
+          setFocusedNode={setFocusedNode}
+          setGraph={setGraph}
+        />
       </ThemeProvider>
     </div>
   );

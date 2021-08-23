@@ -88,6 +88,47 @@ function GraphCanvas({
         },
         borderWidth: 2,
       },
+      "Stats Node": {
+        shape: "circle",
+        color: {
+          background: "#30009C",
+          border: "#3c3c3c",
+          highlight: {
+            background: "#5600E8",
+            border: "#3c3c3c",
+          },
+        },
+        font: {
+          color: "#ffffff",
+        },
+        borderWidth: 0,
+        borderWidthSelected: 2,
+      },
+      "Stats Label": {
+        shape: "box",
+        shapeProperties: {
+          borderRadius: 15,
+        },
+        color: {
+          background: "#5600E8",
+          border: "#3c3c3c",
+          highlight: {
+            background: "#6200EE",
+            border: "#3c3c3c",
+          },
+        },
+        font: {
+          color: "#ffffff",
+        },
+        borderWidth: 0,
+        borderWidthSelected: 2,
+        margin: {
+          top: 10,
+          bottom: 10,
+          left: 10,
+          right: 10,
+        },
+      },
     },
   };
 

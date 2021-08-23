@@ -139,14 +139,76 @@ const graphData = [
   //     "https://www.kindpng.com/picc/m/176-1766682_dart-programming-language-hd-png-download.png",
   //   usedFrequency: 10,
   // },
+  // {
+  //   name: "Kotlin",
+  //   group: "Image",
+  //   parent: "Java",
+  //   imageURL:
+  //     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/1024px-Kotlin_Icon.png",
+  //   usedFrequency: 10,
+  // },
   {
-    name: "Kotlin",
+    name: "React",
     group: "Image",
-    parent: "Java",
-    imageURL:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/1024px-Kotlin_Icon.png",
+    parent: "Web Dev",
+    imageURL: "https://iconape.com/wp-content/files/zk/93042/svg/react.svg",
     usedFrequency: 10,
   },
 ];
 
 export default graphData;
+
+export const pushChildrenNodes = (search, returnArr, nodes = []) => {
+  // console.log("called", search);
+  let nodesData = nodes;
+  const res = nodesData.filter((data) => data.parent === search);
+  if (res.length === 0) {
+    return;
+  } else {
+    nodesData = nodesData.filter((node) => !res.includes(node));
+    res.forEach((data) => {
+      returnArr.push(data);
+      pushChildrenNodes(data.name, returnArr, nodesData);
+    });
+  }
+};
+
+const getMostUsed = (skillsData, category) => {
+  const children = [];
+  pushChildrenNodes(category, children, skillsData);
+
+  let mostUsed = [];
+  let maxVal = 0;
+
+  // Get Max Val
+  children.forEach((child) => {
+    if (child.group === "Image" && child.usedFrequency > maxVal) {
+      maxVal = child.usedFrequency;
+    }
+  });
+
+  children.forEach((child) => {
+    if (child.group === "Image" && child.usedFrequency === maxVal) {
+      mostUsed.push(child.name);
+    }
+  });
+
+  return mostUsed;
+};
+
+// const nodes = [];
+// pushChildrenNodes("Frontend Dev", nodes, graphData);
+// console.log(nodes);
+// console.log(getMostUsed(graphData, "Frontend Dev"))
+const fields = [
+  "Frontend Dev",
+  "Backend Dev",
+  "Blockchain Dev",
+  "Game Dev",
+  "Artificial Intelligence",
+  "Languages",
+];
+
+// const map = new Map();
+// fields.forEach((field) => map.set(field, getMostUsed(graphData, field)))
+// console.log(map)
