@@ -202,7 +202,7 @@ const generateStatsNodes = (skills: Map<string, Skill>) => {
     ...generateFavStack(fieldsData, skills),
   ];
 
-  return graphDataTransformer(nodes);
+  return graphDataTransformer(nodes, "normal");
 };
 
 export default generateStatsNodes;

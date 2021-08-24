@@ -11,7 +11,6 @@ interface TopFacsProps {
 }
 
 const TopFabs = ({ network, toggleHideUI }: TopFacsProps) => {
-
   const handleClick = () => {
     console.log("Clicked");
   };

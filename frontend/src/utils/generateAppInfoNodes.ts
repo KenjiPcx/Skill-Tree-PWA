@@ -77,7 +77,7 @@ const generateAppInfoNodes = () => {
     },
   ];
 
-  const graph = graphDataTransformer(appInfoNodes);
+  const graph = graphDataTransformer(appInfoNodes, "normal");
   const originEdge = {
     from: "Made By",
     to: "Origin",

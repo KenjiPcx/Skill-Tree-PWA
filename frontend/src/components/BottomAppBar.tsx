@@ -17,6 +17,7 @@ import { styled } from "@material-ui/core/styles";
 // Graph Data
 import graphDataTransformer from "../utils/graphDataTransformer";
 import generateStatsNodes from "../utils/generateStatsNodes";
+import generateTimelineNodes from "../utils/generateTimelineNodes";
 interface BottomAppBarProps {
   hideUI: boolean;
   selectedNode: any;
@@ -56,7 +57,7 @@ export default function BottomAppBar({
     const skillsArr = Array.from(skillsData.values());
     const learnedSkills = skillsArr.filter((skill) => !skill.learning);
     setFocusedNode("Origin");
-    setGraph(graphDataTransformer(learnedSkills));
+    setGraph(graphDataTransformer(learnedSkills, "normal"));
   };
 
   const handleInjectStats = () => {
@@ -67,7 +68,15 @@ export default function BottomAppBar({
   const handleInjectLearningSkills = () => {
     const skillsArr = Array.from(skillsData.values());
     setFocusedNode("Origin");
-    setGraph(graphDataTransformer(skillsArr));
+    setGraph(graphDataTransformer(skillsArr, "normal"));
+  };
+
+  const handleInjectTimeline = () => {
+    const graph = graphDataTransformer(
+      generateTimelineNodes(skillsData),
+      "timeline"
+    );
+    setGraph(graph);
   };
 
   return (
@@ -115,7 +124,7 @@ export default function BottomAppBar({
             <IconButton
               color="inherit"
               aria-label="Timeline"
-              onClick={() => {}}
+              onClick={handleInjectTimeline}
             >
               <TimelineIcon />
             </IconButton>

@@ -9,6 +9,7 @@ export type Skill = {
   group: string;
   usedFrequency?: number;
   imageURL?: string;
+  yearStarted?: string;
 };
 
 const generateNode = (data: Skill) => {
@@ -43,7 +44,27 @@ const generateEdge = (data: Skill) => {
   return edge;
 };
 
-const graphDataTransformer = (graphData: Skill[]) => {
+const generateYearEdge = (data: Skill) => {
+  if (data.yearStarted) {
+    return {
+      from: data.yearStarted,
+      to: data.name,
+      width: 1.5,
+      arrowStrikethrough: false,
+    };
+  }
+  return {
+    from: data.parent,
+    to: data.id ? data.id : data.name,
+    width: 1.5,
+    arrowStrikethrough: false,
+  };
+};
+
+const graphDataTransformer = (
+  graphData: Skill[],
+  mode: "timeline" | "normal"
+) => {
   const originNode = {
     id: "Origin",
     label: "Kenji",
@@ -54,7 +75,12 @@ const graphDataTransformer = (graphData: Skill[]) => {
     image: KenjiImg,
   };
   const nodes = graphData.map((data) => generateNode(data));
-  const edges = graphData.map((data) => generateEdge(data));
+  let edges;
+  if (mode === "timeline") {
+    edges = graphData.map((data) => generateYearEdge(data));
+  } else {
+    edges = graphData.map((data) => generateEdge(data));
+  }
   return {
     nodes: [originNode, ...nodes],
     edges: edges,

@@ -69,7 +69,7 @@ function App() {
     const learntSkills = skillsArr.filter((skill) => !skill.learning);
     if (search === "") {
       setFocusedNode("Origin");
-      setGraph(graphDataTransformer(learntSkills));
+      setGraph(graphDataTransformer(learntSkills, "normal"));
     } else if (data.get(search) && !data.get(search).learning) {
       const originEdge = {
         from: "Origin",
@@ -78,7 +78,8 @@ function App() {
         arrowStrikethrough: false,
       };
       const newGraph = graphDataTransformer(
-        filterNodesData(learntSkills, search)
+        filterNodesData(learntSkills, search),
+        "normal"
       );
       if (!newGraph.edges.includes(originEdge)) {
         newGraph.edges.push(originEdge);
@@ -139,7 +140,3 @@ function App() {
 }
 
 export default App;
-
-// useEffect(() => {
-//   console.log("Search", search);
-// }, [search]);

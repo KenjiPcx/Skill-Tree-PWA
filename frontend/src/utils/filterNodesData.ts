@@ -1,6 +1,8 @@
-import graphData from "./testData";
-
-export const pushChildrenNodes = (nodes: any[], search: string, returnArr: any[]) => {
+export const pushChildrenNodes = (
+  nodes: any[],
+  search: string,
+  returnArr: any[]
+) => {
   let nodesData = nodes;
   const res = nodesData.filter(
     (data) => data.parent.toLowerCase() === search.toLowerCase()
@@ -26,7 +28,5 @@ const filterNodesData = (nodes: any[], search: string) => {
 
   return returnArr;
 };
-
-// console.log("final", filterNodesData(graphData, "Game Dev"));
 
 export default filterNodesData;
