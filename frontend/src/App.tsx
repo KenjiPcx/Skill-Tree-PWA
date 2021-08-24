@@ -112,6 +112,7 @@ function App() {
         />
         <ErrorSnackBar showError={showError} setShowError={setShowError} />
         <GraphCanvas
+          theme={theme}
           graph={graph}
           network={network}
           focusedNode={focusedNode}
@@ -129,6 +130,8 @@ function App() {
           network={network}
           hideUI={hideUI}
           toggleHideUI={toggleHideUI}
+          theme={theme}
+          setTheme={setTheme}
         />
       </ThemeProvider>
     </div>

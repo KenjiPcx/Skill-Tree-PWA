@@ -15,5 +15,11 @@ export const lightTheme = createTheme({
 export const darkTheme = createTheme({
   palette: {
     mode: "dark",
+    primary: {
+      main: "#6200EE",
+    },
+    secondary: {
+      main: "#03DAC5",
+    },
   },
 });

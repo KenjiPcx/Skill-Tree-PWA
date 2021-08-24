@@ -48,6 +48,7 @@ export default function BottomAppBar({
   setGraph,
 }: BottomAppBarProps) {
   const botTranslation = useSpring({
+    delay: hideUI ? 0 : 50,
     transform: hideUI ? `translateY(100px)` : "translateY(0px)",
   });
 

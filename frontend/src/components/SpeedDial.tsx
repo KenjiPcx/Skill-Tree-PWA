@@ -7,11 +7,14 @@ import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 import GpsFixedIcon from "@material-ui/icons/GpsFixed";
 import Brightness4Icon from "@material-ui/icons/Brightness4";
 import { useSpring, animated } from "react-spring";
+import { lightTheme, darkTheme } from "./Theme";
 
 interface SpeedDialProps {
   network: any;
   hideUI: boolean;
+  theme: any;
   toggleHideUI: () => void;
+  setTheme: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const AnimatedSpeedDial = animated(SpeedDial);
@@ -19,7 +22,9 @@ const AnimatedSpeedDial = animated(SpeedDial);
 export default function LineSpeedDial({
   network,
   hideUI,
+  theme,
   toggleHideUI,
+  setTheme,
 }: SpeedDialProps) {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -43,6 +48,14 @@ export default function LineSpeedDial({
     handleClose();
   };
 
+  const toggleTheme = () => {
+    if (theme === lightTheme) {
+      setTheme(darkTheme);
+    } else {
+      setTheme(lightTheme);
+    }
+  };
+
   const handleGraphRecenter = () => {
     handleRecenter();
     handleClose();
@@ -57,7 +70,7 @@ export default function LineSpeedDial({
     {
       icon: <Brightness4Icon />,
       name: "Toggle Theme",
-      onClick: toggleAppBars,
+      onClick: toggleTheme,
     },
     {
       icon: <GpsFixedIcon />,

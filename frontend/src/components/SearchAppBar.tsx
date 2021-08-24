@@ -72,8 +72,8 @@ export default function SearchAppBar({
   setGraph,
 }: SearchAppBarProps) {
   const topTranslation = useSpring({
+    delay: hideUI ? 0 : 50,
     transform: hideUI ? `translateY(-100px)` : "translateY(0px)",
-    // opacity: !hideUI,
   });
 
   const handleInjectAppInfo = () => {
