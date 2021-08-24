@@ -2,9 +2,10 @@ import React from "react";
 import KenjiImg from "../assets/kenji.png";
 
 export type Skill = {
+  learning?: boolean;
   id?: string;
   name: string;
-  parent: string;
+  parent?: string;
   group: string;
   usedFrequency?: number;
   imageURL?: string;
@@ -15,19 +16,31 @@ const generateNode = (data: Skill) => {
     id: data.id ? data.id : data.name,
     group: data.group,
     label: data.name,
-    title: `Used in ${data.usedFrequency} projects.`,
   };
   if (data.imageURL) {
-    return { ...node, image: data.imageURL };
+    if (data.learning) {
+      return { ...node, image: data.imageURL, opacity: 0.1 };
+    } else {
+      return { ...node, image: data.imageURL };
+    }
   }
   return node;
 };
 
 const generateEdge = (data: Skill) => {
-  return {
+  const edge = {
     from: data.parent,
     to: data.id ? data.id : data.name,
+    width: 1.5,
+    arrowStrikethrough: false,
   };
+  if (data.learning) {
+    return {
+      ...edge,
+      dashes: true,
+    };
+  }
+  return edge;
 };
 
 const graphDataTransformer = (graphData: Skill[]) => {

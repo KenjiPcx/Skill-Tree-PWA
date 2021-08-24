@@ -1,7 +1,7 @@
 import React from "react";
 import { createTheme } from "@material-ui/core/styles";
 
-const theme = createTheme({
+export const lightTheme = createTheme({
   palette: {
     primary: {
       main: "#6200EE",
@@ -12,4 +12,8 @@ const theme = createTheme({
   },
 });
 
-export default theme
+export const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});

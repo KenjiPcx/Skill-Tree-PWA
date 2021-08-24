@@ -2,17 +2,17 @@ import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import lightTheme from "./components/Theme";
-import { ThemeProvider } from "@material-ui/core";
+import { lightTheme } from "./components/Theme";
+import { IconButton, ThemeProvider } from "@material-ui/core";
 import SearchAppBar from "./components/SearchAppBar";
-import TopFabs from "./components/BottomFabs";
 import GraphCanvas from "./components/Graph";
 import BottomAppBar from "./components/BottomAppBar";
+import SpeedDial from "./components/SpeedDial";
+import ErrorSnackBar from "./components/ErrorSnackBar";
 
 import db from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import graphDataTransformer from "./utils/graphDataTransformer";
-
 import filterNodesData from "./utils/filterNodesData";
 
 function App() {
@@ -36,6 +36,7 @@ function App() {
 
   // App Bar State
   const [search, setSearch] = useState("");
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     console.log("rendered");
@@ -59,27 +60,43 @@ function App() {
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSearch("");
     validateSearch(skillsData);
   };
 
   const validateSearch = (data: Map<string, any>) => {
     const skillsArr = Array.from(data.values());
+    const learntSkills = skillsArr.filter((skill) => !skill.learning);
     if (search === "") {
       setFocusedNode("Origin");
-      setGraph(graphDataTransformer(skillsArr));
-    } else if (data.get(search)) {
+      setGraph(graphDataTransformer(learntSkills));
+    } else if (data.get(search) && !data.get(search).learning) {
       const originEdge = {
         from: "Origin",
         to: search,
+        width: 1.5,
+        arrowStrikethrough: false,
       };
-      const newGraph = graphDataTransformer(filterNodesData(skillsArr, search));
+      const newGraph = graphDataTransformer(
+        filterNodesData(learntSkills, search)
+      );
       if (!newGraph.edges.includes(originEdge)) {
         newGraph.edges.push(originEdge);
       }
       setFocusedNode(search);
       setGraph(newGraph);
+    } else {
+      setShowError(true);
     }
   };
+
+  useEffect(() => {
+    console.log("HideUI", hideUI);
+  }, [hideUI]);
+
+  useEffect(() => {
+    console.log("SelectedNode", selectedNode);
+  }, [selectedNode]);
 
   return (
     <div className="App">
@@ -90,8 +107,10 @@ function App() {
           search={search}
           setSearch={setSearch}
           handleSearch={handleSearch}
+          setGraph={setGraph}
+          setFocusedNode={setFocusedNode}
         />
-        <TopFabs network={network} toggleHideUI={toggleHideUI} />
+        <ErrorSnackBar showError={showError} setShowError={setShowError} />
         <GraphCanvas
           graph={graph}
           network={network}
@@ -106,6 +125,11 @@ function App() {
           setFocusedNode={setFocusedNode}
           setGraph={setGraph}
         />
+        <SpeedDial
+          network={network}
+          hideUI={hideUI}
+          toggleHideUI={toggleHideUI}
+        />
       </ThemeProvider>
     </div>
   );
@@ -113,12 +137,6 @@ function App() {
 
 export default App;
 
-// useEffect(() => {
-//   console.log("SelectedNode", selectedNode);
-// }, [selectedNode]);
-// useEffect(() => {
-//   console.log("HideUI", hideUI);
-// }, [hideUI]);
 // useEffect(() => {
 //   console.log("Search", search);
 // }, [search]);

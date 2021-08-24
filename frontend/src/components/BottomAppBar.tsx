@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 // Components
 import RadialSpeedDial from "./RadialSpeedDial";
@@ -8,8 +8,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import BarChartIcon from "@material-ui/icons/BarChart";
 import BubbleChartIcon from "@material-ui/icons/BubbleChart";
-import ListIcon from "@material-ui/icons/List";
-import SettingsIcon from "@material-ui/icons/Settings";
+import NewReleasesIcon from "@material-ui/icons/NewReleases";
+import TimelineIcon from "@material-ui/icons/Timeline";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useSpring, animated } from "react-spring";
 import { styled } from "@material-ui/core/styles";
@@ -25,20 +25,20 @@ interface BottomAppBarProps {
   setGraph: React.Dispatch<any>;
 }
 
-const AnimatedAppBar = animated(AppBar);
-
 const NotchMargin = styled("div")({
   width: "70px",
   height: "35px",
   position: "absolute",
   zIndex: 1,
-  top: 0,
+  top: -1,
   left: 0,
   right: 0,
   margin: "0 auto",
   backgroundColor: "#FFFFFF",
   borderRadius: "0 0 35px 35px",
 });
+
+const AnimatedAppBar = animated(AppBar);
 
 export default function BottomAppBar({
   hideUI,
@@ -53,12 +53,20 @@ export default function BottomAppBar({
 
   const resetInjections = () => {
     const skillsArr = Array.from(skillsData.values());
+    const learnedSkills = skillsArr.filter((skill) => !skill.learning);
     setFocusedNode("Origin");
-    setGraph(graphDataTransformer(skillsArr));
+    setGraph(graphDataTransformer(learnedSkills));
   };
 
   const handleInjectStats = () => {
+    setFocusedNode("Origin");
     setGraph(generateStatsNodes(skillsData));
+  };
+
+  const handleInjectLearningSkills = () => {
+    const skillsArr = Array.from(skillsData.values());
+    setFocusedNode("Origin");
+    setGraph(graphDataTransformer(skillsArr));
   };
 
   return (
@@ -69,6 +77,8 @@ export default function BottomAppBar({
         sx={{ top: "auto", bottom: 0, zIndex: 1 }}
         style={botTranslation}
       >
+        <NotchMargin />
+        <RadialSpeedDial hideUI={hideUI} />
         <Toolbar>
           <Tooltip title="Knowledge Network">
             <IconButton
@@ -80,6 +90,16 @@ export default function BottomAppBar({
             </IconButton>
           </Tooltip>
           <Box sx={{ flexGrow: 1 }} />
+          <Tooltip title="Learning List">
+            <IconButton
+              color="inherit"
+              aria-label="Learning List"
+              onClick={handleInjectLearningSkills}
+            >
+              <NewReleasesIcon />
+            </IconButton>
+          </Tooltip>
+          <Box sx={{ flexGrow: 3 }} />
           <Tooltip title="Learning Stats">
             <IconButton
               color="inherit"
@@ -89,22 +109,18 @@ export default function BottomAppBar({
               <BarChartIcon />
             </IconButton>
           </Tooltip>
-          <NotchMargin />
-          <Box sx={{ flexGrow: 3 }} />
-          <Tooltip title="Learning List">
-            <IconButton color="inherit" aria-label="Learning List">
-              <ListIcon />
-            </IconButton>
-          </Tooltip>
           <Box sx={{ flexGrow: 1 }} />
-          <Tooltip title="Settings">
-            <IconButton color="inherit" aria-label="Settings">
-              <SettingsIcon />
+          <Tooltip title="Timeline">
+            <IconButton
+              color="inherit"
+              aria-label="Timeline"
+              onClick={() => {}}
+            >
+              <TimelineIcon />
             </IconButton>
           </Tooltip>
         </Toolbar>
       </AnimatedAppBar>
-      <RadialSpeedDial hideUI={hideUI} />
     </>
   );
 }

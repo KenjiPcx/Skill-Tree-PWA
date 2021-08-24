@@ -147,11 +147,20 @@ const graphData = [
   //     "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Kotlin_Icon.png/1024px-Kotlin_Icon.png",
   //   usedFrequency: 10,
   // },
+  // {
+  //   name: "React",
+  //   group: "Image",
+  //   parent: "Web Dev",
+  //   imageURL: "https://iconape.com/wp-content/files/zk/93042/svg/react.svg",
+  //   usedFrequency: 10,
+  // },
   {
-    name: "React",
+    learning: true,
+    name: "Next.js",
     group: "Image",
     parent: "Web Dev",
-    imageURL: "https://iconape.com/wp-content/files/zk/93042/svg/react.svg",
+    imageURL:
+      "https://seeklogo.com/images/N/next-js-logo-8FCFF51DD2-seeklogo.com.png",
     usedFrequency: 10,
   },
 ];

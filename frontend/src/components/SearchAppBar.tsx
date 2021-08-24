@@ -6,10 +6,11 @@ import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import InputBase from "@material-ui/core/InputBase";
-import MenuIcon from "@material-ui/icons/Menu";
+import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import SearchIcon from "@material-ui/icons/Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useSpring, animated } from "react-spring";
+import generateAppInfoNodes from "../utils/generateAppInfoNodes";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -58,6 +59,8 @@ interface SearchAppBarProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   handleSearch: (e: React.FormEvent<HTMLFormElement>) => void;
+  setFocusedNode: React.Dispatch<React.SetStateAction<string>>;
+  setGraph: React.Dispatch<any>;
 }
 
 export default function SearchAppBar({
@@ -65,11 +68,18 @@ export default function SearchAppBar({
   search,
   setSearch,
   handleSearch,
+  setFocusedNode,
+  setGraph,
 }: SearchAppBarProps) {
   const topTranslation = useSpring({
     transform: hideUI ? `translateY(-100px)` : "translateY(0px)",
     // opacity: !hideUI,
   });
+
+  const handleInjectAppInfo = () => {
+    setFocusedNode("App Info");
+    setGraph(generateAppInfoNodes());
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -85,15 +95,16 @@ export default function SearchAppBar({
                 flexGrow: 1,
                 flexBasis: "10%",
               }}
-              onClick={() => console.log("Clicked")}
+              onClick={handleInjectAppInfo}
             >
-              <MenuIcon />
+              <AccountTreeIcon />
             </IconButton>
           </Tooltip>
           <Typography
             variant="h6"
             noWrap
             component="div"
+            align="left"
             sx={{
               flexGrow: 1,
               flexBasis: "45%",

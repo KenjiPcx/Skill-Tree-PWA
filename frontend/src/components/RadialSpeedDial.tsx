@@ -12,7 +12,7 @@ import { useSpring, animated } from "react-spring";
 const FabContainer = styled("div")({
   position: "absolute",
   zIndex: 10,
-  bottom: "6.5%",
+  top: 0,
   left: 0,
   right: 0,
   margin: "0 auto",
@@ -28,6 +28,7 @@ const StyledFab = styled(Fab)({
   margin: "auto auto",
 });
 
+const animationDuration = 250;
 const yOffset = 30;
 const xOffset = yOffset * 1.73;
 const AnimatedFab = animated(StyledFab);
@@ -43,24 +44,33 @@ const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
   };
 
   const leftFabTranslation = useSpring({
+    config: { duration: animationDuration },
+    opacity: showSpeedDial ? 1 : 0,
     transform: showSpeedDial
-      ? `translate(-${xOffset}px, -${yOffset}px)`
-      : "translate(0px, 0px)",
+      ? `translate(-${xOffset}px, -${yOffset}px) scale(1)`
+      : "translate(0px, 0px) scale(0)",
   });
 
   const middleFabTranslation = useSpring({
+    config: { duration: animationDuration },
+    opacity: showSpeedDial ? 1 : 0,
     transform: showSpeedDial
-      ? `translate(-${0}px, -${Math.sqrt(xOffset ** 2 + yOffset ** 2)}px)`
-      : "translate(0px, 0px)",
+      ? `translate(-${0}px, -${Math.sqrt(
+          xOffset ** 2 + yOffset ** 2
+        )}px) scale(1)`
+      : "translate(0px, 0px) scale(0)",
   });
 
   const rightFabTranslation = useSpring({
+    config: { duration: animationDuration },
+    opacity: showSpeedDial ? 1 : 0,
     transform: showSpeedDial
-      ? `translate(${xOffset}px, -${yOffset}px)`
-      : "translate(0px, 0px)",
+      ? `translate(${xOffset}px, -${yOffset}px) scale(1)`
+      : "translate(0px, 0px) scale(0)",
   });
 
   const mainFabRotation = useSpring({
+    config: { duration: animationDuration },
     transform: showSpeedDial ? `rotate(225deg)` : "rotate(0deg)",
   });
 

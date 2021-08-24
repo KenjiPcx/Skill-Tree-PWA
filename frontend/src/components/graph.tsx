@@ -10,6 +10,119 @@ interface GraphCanvasProps {
   setSelectedNode: React.Dispatch<any>;
 }
 
+const options = {
+  layout: {
+    hierarchical: false,
+  },
+  edges: {
+    color: "#000000",
+  },
+  groups: {
+    "Category Label": {
+      shape: "box",
+      shapeProperties: {
+        borderRadius: 15,
+      },
+      size: 6,
+      color: {
+        background: "#6200EE",
+        border: "#3c3c3c",
+        highlight: {
+          background: "#7F39FB",
+          border: "#3c3c3c",
+        },
+      },
+      font: {
+        color: "#ffffff",
+      },
+      borderWidth: 0,
+      borderWidthSelected: 2,
+      margin: {
+        top: 5,
+        bottom: 5,
+        left: 10,
+        right: 10,
+      },
+    },
+    "Subcategory Label": {
+      shape: "box",
+      shapeProperties: {
+        borderRadius: 15,
+      },
+      size: 6,
+      color: {
+        background: "#985EFF",
+        border: "#3c3c3c",
+        highlight: {
+          background: "#BB86FC",
+          border: "#3c3c3c",
+        },
+      },
+      font: {
+        color: "#ffffff",
+      },
+      borderWidth: 0,
+      borderWidthSelected: 2,
+      margin: {
+        top: 5,
+        bottom: 5,
+        left: 10,
+        right: 10,
+      },
+    },
+    Image: {
+      shape: "circularImage",
+      brokenImage: "https://bitsofco.de/content/images/2018/12/broken-1.png",
+      image: "https://bitsofco.de/content/images/2018/12/broken-1.png",
+      color: {
+        background: "#FFFFFF",
+      },
+      borderWidth: 2,
+    },
+    "Stats Node": {
+      shape: "circle",
+      color: {
+        background: "#30009C",
+        border: "#3c3c3c",
+        highlight: {
+          background: "#5600E8",
+          border: "#3c3c3c",
+        },
+      },
+      font: {
+        color: "#ffffff",
+      },
+      borderWidth: 0,
+      borderWidthSelected: 2,
+    },
+    "Stats Label": {
+      shape: "box",
+      shapeProperties: {
+        borderRadius: 15,
+      },
+      color: {
+        background: "#30009C",
+        border: "#3c3c3c",
+        highlight: {
+          background: "#5600E8",
+          border: "#3c3c3c",
+        },
+      },
+      font: {
+        color: "#ffffff",
+      },
+      borderWidth: 0,
+      borderWidthSelected: 2,
+      margin: {
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
+      },
+    },
+  },
+};
+
 function GraphCanvas({
   graph,
   network,
@@ -19,126 +132,14 @@ function GraphCanvas({
 }: GraphCanvasProps) {
   const graphRef = useRef(null);
 
-  const options = {
-    layout: {
-      hierarchical: false,
-    },
-    edges: {
-      color: "#000000",
-    },
-    groups: {
-      "Category Label": {
-        shape: "box",
-        shapeProperties: {
-          borderRadius: 15,
-        },
-        size: 6,
-        color: {
-          background: "#7C2FEB",
-          border: "#3c3c3c",
-          highlight: {
-            background: "#7F39FB",
-            border: "#3c3c3c",
-          },
-        },
-        font: {
-          color: "#ffffff",
-        },
-        borderWidth: 0,
-        borderWidthSelected: 2,
-        margin: {
-          top: 5,
-          bottom: 5,
-          left: 10,
-          right: 10,
-        },
+  const events = useMemo(() => {
+    return {
+      select: function (event: any) {
+        var { nodes, edges } = event;
+        setSelectedNode(nodes[0]);
       },
-      "Subcategory Label": {
-        shape: "box",
-        shapeProperties: {
-          borderRadius: 15,
-        },
-        size: 6,
-        color: {
-          background: "#BB86FC",
-          border: "#3c3c3c",
-          highlight: {
-            background: "#BB86FC",
-            border: "#3c3c3c",
-          },
-        },
-        font: {
-          color: "#ffffff",
-        },
-        borderWidth: 0,
-        borderWidthSelected: 2,
-        margin: {
-          top: 5,
-          bottom: 5,
-          left: 10,
-          right: 10,
-        },
-      },
-      Image: {
-        shape: "circularImage",
-        brokenImage: "https://bitsofco.de/content/images/2018/12/broken-1.png",
-        image: "https://bitsofco.de/content/images/2018/12/broken-1.png",
-        color: {
-          background: "#FFFFFF",
-        },
-        borderWidth: 2,
-      },
-      "Stats Node": {
-        shape: "circle",
-        color: {
-          background: "#30009C",
-          border: "#3c3c3c",
-          highlight: {
-            background: "#5600E8",
-            border: "#3c3c3c",
-          },
-        },
-        font: {
-          color: "#ffffff",
-        },
-        borderWidth: 0,
-        borderWidthSelected: 2,
-      },
-      "Stats Label": {
-        shape: "box",
-        shapeProperties: {
-          borderRadius: 15,
-        },
-        color: {
-          background: "#5600E8",
-          border: "#3c3c3c",
-          highlight: {
-            background: "#6200EE",
-            border: "#3c3c3c",
-          },
-        },
-        font: {
-          color: "#ffffff",
-        },
-        borderWidth: 0,
-        borderWidthSelected: 2,
-        margin: {
-          top: 10,
-          bottom: 10,
-          left: 10,
-          right: 10,
-        },
-      },
-    },
-  };
-
-  const events: any = {
-    select: function (event: any) {
-      var { nodes, edges } = event;
-      setSelectedNode(nodes[0]);
-      console.log(nodes)
-    },
-  };
+    };
+  }, []);
 
   const displayGraph = useMemo(() => {
     if (graph) {
@@ -155,9 +156,9 @@ function GraphCanvas({
     }
     return <CircularProgress />;
   }, [graph]);
- 
+
   useEffect(() => {
-    console.log("Focused Node", focusedNode)
+    console.log("Focused Node", focusedNode);
     if (network) {
       network.fit({
         nodes: [focusedNode],
