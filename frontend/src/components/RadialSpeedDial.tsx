@@ -6,6 +6,7 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import EditIcon from "@material-ui/icons/Edit";
 import { Tooltip } from "@material-ui/core";
+import ErrorSnackBar from "./ErrorSnackBar";
 
 import { useSpring, animated } from "react-spring";
 
@@ -34,15 +35,23 @@ const xOffset = yOffset * 1.73;
 const AnimatedFab = animated(StyledFab);
 interface RadialSpeedDialProps {
   hideUI: boolean;
+  showSpeedDial: boolean;
+  selectedNode: string;
+  setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
+  setModalType: React.Dispatch<React.SetStateAction<string>>;
+  handleOpenModal: () => void;
+  toggleSpeedDial: () => void;
 }
 
-const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
-  const [showSpeedDial, setShowSpeedDial] = useState(false);
-
-  const toggleSpeedDial = () => {
-    setShowSpeedDial(!showSpeedDial);
-  };
-
+const RadialSpeedDial = ({
+  hideUI,
+  showSpeedDial,
+  selectedNode,
+  setShowNoNodeError,
+  setModalType,
+  handleOpenModal,
+  toggleSpeedDial,
+}: RadialSpeedDialProps) => {
   const leftFabTranslation = useSpring({
     config: { duration: animationDuration },
     opacity: showSpeedDial ? 1 : 0,
@@ -74,6 +83,33 @@ const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
     transform: showSpeedDial ? `rotate(225deg)` : "rotate(0deg)",
   });
 
+  const handleOpenDeleteModal = () => {
+    if (selectedNode === "") {
+      setShowNoNodeError(true);
+    } else {
+      setModalType("delete");
+      handleOpenModal();
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    if (selectedNode === "") {
+      setShowNoNodeError(true);
+    } else {
+      setModalType("add");
+      handleOpenModal();
+    }
+  };
+
+  const handleOpenEditModal = () => {
+    if (selectedNode === "") {
+      setShowNoNodeError(true);
+    } else {
+      setModalType("edit");
+      handleOpenModal();
+    }
+  };
+
   return (
     <FabContainer>
       <Tooltip title="Remove Node">
@@ -82,7 +118,7 @@ const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
           style={leftFabTranslation}
           color="secondary"
           aria-label="Remove Node"
-          onClick={() => console.log(yOffset)}
+          onClick={handleOpenDeleteModal}
         >
           <DeleteForeverIcon />
         </AnimatedFab>
@@ -94,7 +130,7 @@ const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
           style={middleFabTranslation}
           color="secondary"
           aria-label="Add Child Node"
-          onClick={() => console.log("Clicked2")}
+          onClick={handleOpenAddModal}
         >
           <AddCircleOutlineIcon />
         </AnimatedFab>
@@ -106,7 +142,7 @@ const RadialSpeedDial = ({ hideUI }: RadialSpeedDialProps) => {
           style={rightFabTranslation}
           color="secondary"
           aria-label="Edit Node"
-          onClick={() => console.log("Clicked3")}
+          onClick={handleOpenEditModal}
         >
           <EditIcon />
         </AnimatedFab>

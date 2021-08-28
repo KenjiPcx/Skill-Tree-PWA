@@ -12,6 +12,14 @@ const graphData = [
   //   parent: "Origin",
   //   usedFrequency: 10,
   // },
+  {
+    name: "Firebase",
+    group: "Image",
+    parent: "Backend Dev",
+    imageURL:
+      "https://firebase.google.com/images/brand-guidelines/logo-logomark.png",
+    usedFrequency: 10,
+  },
   // {
   //   name: "Blockchain Dev",
   //   group: "Category Label",
@@ -36,7 +44,6 @@ const graphData = [
   //   parent: "Origin",
   //   usedFrequency: 10,
   // },
-
   // // Frontend Subcategories
   // {
   //   name: "Web Dev",
@@ -56,7 +63,28 @@ const graphData = [
   //   parent: "Frontend Dev",
   //   usedFrequency: 10,
   // },
-
+  // {
+  //   name: "Flutter",
+  //   group: "Image",
+  //   parent: "Frontend Dev",
+  //   imageURL: "https://logowik.com/content/uploads/images/flutter5786.jpg",
+  //   usedFrequency: 10,
+  // },
+  // {
+  //   name: "Material UI",
+  //   group: "Image",
+  //   parent: "UI Libraries",
+  //   imageURL: "https://material-ui.com/static/logo.png",
+  //   usedFrequency: 10,
+  // },
+  // {
+  //   name: "React Bootstrap",
+  //   group: "Image",
+  //   parent: "UI Libraries",
+  //   imageURL:
+  //     "https://crowdcast-prod.imgix.net/-KHhIzuATU2K4OVPd2sP/event-cover-5388?w=800",
+  //   usedFrequency: 10,
+  // },
   // // Backend Subcategories
   // {
   //   name: "Database",
@@ -76,7 +104,6 @@ const graphData = [
   //   parent: "Backend Dev",
   //   usedFrequency: 10,
   // },
-
   // // Artificial Intelligence Subcategories
   // {
   //   name: "Machine Learning",
@@ -90,7 +117,6 @@ const graphData = [
   //   parent: "Machine Learning",
   //   usedFrequency: 10,
   // },
-
   // // Languages
   // {
   //   name: "Python",
@@ -154,70 +180,70 @@ const graphData = [
   //   imageURL: "https://iconape.com/wp-content/files/zk/93042/svg/react.svg",
   //   usedFrequency: 10,
   // },
-  {
-    learning: true,
-    name: "Next.js",
-    group: "Image",
-    parent: "Web Dev",
-    imageURL:
-      "https://seeklogo.com/images/N/next-js-logo-8FCFF51DD2-seeklogo.com.png",
-    usedFrequency: 10,
-  },
+  // {
+  //   learning: true,
+  //   name: "Next.js",
+  //   group: "Image",
+  //   parent: "Web Dev",
+  //   imageURL:
+  //     "https://seeklogo.com/images/N/next-js-logo-8FCFF51DD2-seeklogo.com.png",
+  //   usedFrequency: 10,
+  // },
 ];
 
 export default graphData;
 
-export const pushChildrenNodes = (search, returnArr, nodes = []) => {
-  // console.log("called", search);
-  let nodesData = nodes;
-  const res = nodesData.filter((data) => data.parent === search);
-  if (res.length === 0) {
-    return;
-  } else {
-    nodesData = nodesData.filter((node) => !res.includes(node));
-    res.forEach((data) => {
-      returnArr.push(data);
-      pushChildrenNodes(data.name, returnArr, nodesData);
-    });
-  }
-};
+// export const pushChildrenNodes = (search, returnArr, nodes = []) => {
+//   // console.log("called", search);
+//   let nodesData = nodes;
+//   const res = nodesData.filter((data) => data.parent === search);
+//   if (res.length === 0) {
+//     return;
+//   } else {
+//     nodesData = nodesData.filter((node) => !res.includes(node));
+//     res.forEach((data) => {
+//       returnArr.push(data);
+//       pushChildrenNodes(data.name, returnArr, nodesData);
+//     });
+//   }
+// };
 
-const getMostUsed = (skillsData, category) => {
-  const children = [];
-  pushChildrenNodes(category, children, skillsData);
+// const getMostUsed = (skillsData, category) => {
+//   const children = [];
+//   pushChildrenNodes(category, children, skillsData);
 
-  let mostUsed = [];
-  let maxVal = 0;
+//   let mostUsed = [];
+//   let maxVal = 0;
 
-  // Get Max Val
-  children.forEach((child) => {
-    if (child.group === "Image" && child.usedFrequency > maxVal) {
-      maxVal = child.usedFrequency;
-    }
-  });
+//   // Get Max Val
+//   children.forEach((child) => {
+//     if (child.group === "Image" && child.usedFrequency > maxVal) {
+//       maxVal = child.usedFrequency;
+//     }
+//   });
 
-  children.forEach((child) => {
-    if (child.group === "Image" && child.usedFrequency === maxVal) {
-      mostUsed.push(child.name);
-    }
-  });
+//   children.forEach((child) => {
+//     if (child.group === "Image" && child.usedFrequency === maxVal) {
+//       mostUsed.push(child.name);
+//     }
+//   });
 
-  return mostUsed;
-};
+//   return mostUsed;
+// };
 
-// const nodes = [];
-// pushChildrenNodes("Frontend Dev", nodes, graphData);
-// console.log(nodes);
-// console.log(getMostUsed(graphData, "Frontend Dev"))
-const fields = [
-  "Frontend Dev",
-  "Backend Dev",
-  "Blockchain Dev",
-  "Game Dev",
-  "Artificial Intelligence",
-  "Languages",
-];
+// // const nodes = [];
+// // pushChildrenNodes("Frontend Dev", nodes, graphData);
+// // console.log(nodes);
+// // console.log(getMostUsed(graphData, "Frontend Dev"))
+// const fields = [
+//   "Frontend Dev",
+//   "Backend Dev",
+//   "Blockchain Dev",
+//   "Game Dev",
+//   "Artificial Intelligence",
+//   "Languages",
+// ];
 
-// const map = new Map();
-// fields.forEach((field) => map.set(field, getMostUsed(graphData, field)))
-// console.log(map)
+// // const map = new Map();
+// // fields.forEach((field) => map.set(field, getMostUsed(graphData, field)))
+// // console.log(map)

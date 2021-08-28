@@ -22,8 +22,13 @@ interface BottomAppBarProps {
   hideUI: boolean;
   selectedNode: any;
   skillsData: Map<string, any>;
+  showSpeedDial: boolean;
+  setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
   setFocusedNode: React.Dispatch<React.SetStateAction<string>>;
   setGraph: React.Dispatch<any>;
+  setModalType: React.Dispatch<React.SetStateAction<string>>;
+  toggleSpeedDial: () => void;
+  handleOpenModal: () => void;
 }
 
 const NotchMargin = styled("div")({
@@ -45,12 +50,17 @@ export default function BottomAppBar({
   hideUI,
   selectedNode,
   skillsData,
+  showSpeedDial,
+  setShowNoNodeError,
   setFocusedNode,
   setGraph,
+  setModalType,
+  toggleSpeedDial,
+  handleOpenModal
 }: BottomAppBarProps) {
   const botTranslation = useSpring({
     delay: hideUI ? 0 : 50,
-    transform: hideUI ? `translateY(100px)` : "translateY(0px)",
+    transform: hideUI ? `translateY(150px)` : "translateY(0px)",
   });
 
   const resetInjections = () => {
@@ -88,7 +98,15 @@ export default function BottomAppBar({
         style={botTranslation}
       >
         <NotchMargin />
-        <RadialSpeedDial hideUI={hideUI} />
+        <RadialSpeedDial
+          hideUI={hideUI}
+          showSpeedDial={showSpeedDial}
+          selectedNode={selectedNode}
+          setShowNoNodeError={setShowNoNodeError}
+          setModalType={setModalType}
+          handleOpenModal={handleOpenModal}
+          toggleSpeedDial={toggleSpeedDial}
+        />
         <Toolbar>
           <Tooltip title="Knowledge Network">
             <IconButton

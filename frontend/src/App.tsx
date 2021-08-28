@@ -3,12 +3,13 @@ import "./App.css";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import { lightTheme } from "./components/Theme";
-import { IconButton, ThemeProvider } from "@material-ui/core";
+import { ThemeProvider } from "@material-ui/core";
 import SearchAppBar from "./components/SearchAppBar";
 import GraphCanvas from "./components/Graph";
 import BottomAppBar from "./components/BottomAppBar";
 import SpeedDial from "./components/SpeedDial";
 import ErrorSnackBar from "./components/ErrorSnackBar";
+import NodeOptionModals from "./components/NodeOptionModals";
 
 import db from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
@@ -24,7 +25,6 @@ function App() {
   const [selectedNode, setSelectedNode] = useState("");
 
   const toggleHideUI = () => {
-    console.log("Clicked");
     setHideUI(!hideUI);
   };
 
@@ -37,9 +37,20 @@ function App() {
   // App Bar State
   const [search, setSearch] = useState("");
   const [showError, setShowError] = useState(false);
+  const [showSpeedDial, setShowSpeedDial] = useState(false);
+
+  const toggleSpeedDial = () => {
+    setShowSpeedDial(!showSpeedDial);
+  };
+
+  // Modal State
+  const [modalType, setModalType] = useState("");
+  const [showNoNodeError, setShowNoNodeError] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
 
   useEffect(() => {
-    console.log("rendered");
     isMounted.current = true;
     const unsub = onSnapshot(collection(db, "nodes"), (querySnapshot) => {
       const skills: Map<string, any> = new Map();
@@ -91,14 +102,6 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    console.log("HideUI", hideUI);
-  }, [hideUI]);
-
-  useEffect(() => {
-    console.log("SelectedNode", selectedNode);
-  }, [selectedNode]);
-
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
@@ -111,21 +114,47 @@ function App() {
           setGraph={setGraph}
           setFocusedNode={setFocusedNode}
         />
-        <ErrorSnackBar showError={showError} setShowError={setShowError} />
+        <ErrorSnackBar
+          key={"SearchError"}
+          errorMsg={"No Node Found"}
+          showError={showError}
+          setShowError={setShowError}
+        />
+        <ErrorSnackBar
+          key={"NoNodeError"}
+          errorMsg={"No Node Selected"}
+          showError={showNoNodeError}
+          setShowError={setShowNoNodeError}
+        />
+        <NodeOptionModals
+          theme={theme}
+          selectedNode={selectedNode}
+          type={modalType}
+          openModal={openModal}
+          skillsData={skillsData}
+          handleOpenModal={handleOpenModal}
+          handleCloseModal={handleCloseModal}
+        />
         <GraphCanvas
           theme={theme}
           graph={graph}
           network={network}
           focusedNode={focusedNode}
           setNetwork={setNetwork}
+          setShowSpeedDial={setShowSpeedDial}
           setSelectedNode={setSelectedNode}
         />
         <BottomAppBar
           hideUI={hideUI}
           selectedNode={selectedNode}
           skillsData={skillsData}
+          showSpeedDial={showSpeedDial}
           setFocusedNode={setFocusedNode}
+          setShowNoNodeError={setShowNoNodeError}
           setGraph={setGraph}
+          setModalType={setModalType}
+          handleOpenModal={handleOpenModal}
+          toggleSpeedDial={toggleSpeedDial}
         />
         <SpeedDial
           network={network}

@@ -10,6 +10,7 @@ interface GraphCanvasProps {
   focusedNode: string;
   setNetwork: React.Dispatch<any>;
   setSelectedNode: React.Dispatch<any>;
+  setShowSpeedDial: React.Dispatch<any>;
 }
 
 function GraphCanvas({
@@ -19,6 +20,7 @@ function GraphCanvas({
   focusedNode,
   setNetwork,
   setSelectedNode,
+  setShowSpeedDial,
 }: GraphCanvasProps) {
   const graphRef = useRef(null);
 
@@ -46,7 +48,7 @@ function GraphCanvas({
             },
           },
           font: {
-            color: "#ffffff",
+            color: "#FFFFFF",
           },
           borderWidth: 0,
           borderWidthSelected: 2,
@@ -92,7 +94,7 @@ function GraphCanvas({
             background: "#FFFFFF",
           },
           font: {
-            color: "#ffffff",
+            color: theme.palette.text.primary,
           },
           borderWidth: 2,
         },
@@ -141,14 +143,18 @@ function GraphCanvas({
     };
   }, [theme]);
 
-  const events = useMemo(() => {
-    return {
-      select: function (event: any) {
-        var { nodes, edges } = event;
-        setSelectedNode(nodes[0]);
-      },
-    };
-  }, []);
+  const events = {
+    selectNode: function (event: any) {
+      const { nodes, edges } = event;
+      setSelectedNode(nodes[0]);
+      setShowSpeedDial(true)
+    },
+    deselectNode: function (event: any) {
+      const { nodes, edges } = event;
+      setSelectedNode("");
+      setShowSpeedDial(false);
+    },
+  };
 
   const displayGraph = useMemo(() => {
     if (graph) {
@@ -167,7 +173,6 @@ function GraphCanvas({
   }, [graph, options]);
 
   useEffect(() => {
-    console.log("Focused Node", focusedNode);
     if (network) {
       network.fit({
         nodes: [focusedNode],

@@ -1,5 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  deleteDoc,
+  updateDoc,
+  setDoc,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -13,5 +19,29 @@ const firebaseConfig = {
 // Initialize Firebase
 initializeApp(firebaseConfig);
 const db = getFirestore();
+
+export const addNode = async (skill: any) => {
+  try {
+    await setDoc(doc(db, "nodes", skill.name), skill);
+  } catch (e) {
+    console.log("Failed To Upload Node");
+  }
+};
+
+export const updateNode = async (skill: any) => {
+  try {
+    await updateDoc(doc(db, "nodes", skill.name), skill);
+  } catch (e) {
+    console.log("Failed To Update Node");
+  }
+};
+
+export const deleteNode = async (name: string) => {
+  try {
+    await deleteDoc(doc(db, "nodes", name));
+  } catch (e) {
+    console.log("Failed To Delete Node");
+  }
+};
 
 export default db;
