@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { styled } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
@@ -6,9 +6,9 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import EditIcon from "@material-ui/icons/Edit";
 import { Tooltip } from "@material-ui/core";
-import ErrorSnackBar from "./ErrorSnackBar";
 
 import { useSpring, animated } from "react-spring";
+import { ModalData } from "../App";
 
 const FabContainer = styled("div")({
   position: "absolute",
@@ -34,23 +34,17 @@ const yOffset = 30;
 const xOffset = yOffset * 1.73;
 const AnimatedFab = animated(StyledFab);
 interface RadialSpeedDialProps {
-  hideUI: boolean;
   showSpeedDial: boolean;
   selectedNode: string;
   setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
-  setModalType: React.Dispatch<React.SetStateAction<string>>;
-  handleOpenModal: () => void;
-  toggleSpeedDial: () => void;
+  setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
 }
 
 const RadialSpeedDial = ({
-  hideUI,
   showSpeedDial,
   selectedNode,
   setShowNoNodeError,
-  setModalType,
-  handleOpenModal,
-  toggleSpeedDial,
+  setModalData,
 }: RadialSpeedDialProps) => {
   const leftFabTranslation = useSpring({
     config: { duration: animationDuration },
@@ -87,8 +81,13 @@ const RadialSpeedDial = ({
     if (selectedNode === "") {
       setShowNoNodeError(true);
     } else {
-      setModalType("delete");
-      handleOpenModal();
+      setModalData((data: ModalData) => {
+        return {
+          ...data,
+          openModal: true,
+          modalType: "delete",
+        };
+      });
     }
   };
 
@@ -96,8 +95,13 @@ const RadialSpeedDial = ({
     if (selectedNode === "") {
       setShowNoNodeError(true);
     } else {
-      setModalType("add");
-      handleOpenModal();
+      setModalData((data: ModalData) => {
+        return {
+          ...data,
+          openModal: true,
+          modalType: "add",
+        };
+      });
     }
   };
 
@@ -105,8 +109,13 @@ const RadialSpeedDial = ({
     if (selectedNode === "") {
       setShowNoNodeError(true);
     } else {
-      setModalType("edit");
-      handleOpenModal();
+      setModalData((data: ModalData) => {
+        return {
+          ...data,
+          openModal: true,
+          modalType: "edit",
+        };
+      });
     }
   };
 
@@ -153,7 +162,14 @@ const RadialSpeedDial = ({
           style={mainFabRotation}
           color="secondary"
           aria-label="Toggle Node Options"
-          onClick={() => toggleSpeedDial()}
+          onClick={() =>
+            setModalData((data: ModalData) => {
+              return {
+                ...data,
+                showSpeedDial: !data.showSpeedDial,
+              };
+            })
+          }
         >
           <AddIcon fontSize="large" />
         </AnimatedFab>

@@ -16,39 +16,49 @@ import { collection, onSnapshot } from "firebase/firestore";
 import graphDataTransformer from "./utils/graphDataTransformer";
 import filterNodesData from "./utils/filterNodesData";
 
+export interface ModalData {
+  selectedNode: string;
+  modalType: string;
+  openModal: boolean;
+  showSpeedDial: boolean;
+}
+
+export interface GraphData {
+  graph: any;
+  focusedNode: string;
+}
+
 function App() {
   const isMounted = useRef<boolean | null>(null);
-
+  console.log("Render App");
   // App Settings
   const [theme, setTheme] = useState(lightTheme);
   const [hideUI, setHideUI] = useState(false);
-  const [selectedNode, setSelectedNode] = useState("");
 
   const toggleHideUI = () => {
-    setHideUI(!hideUI);
+    setHideUI((val: boolean) => !val);
   };
 
   // Graph State
   const [network, setNetwork] = useState<any | null>(null);
   const [skillsData, setSkillData] = useState<Map<string, any>>(new Map());
-  const [graph, setGraph] = useState<any>(null);
-  const [focusedNode, setFocusedNode] = useState("Origin");
+  const [graphData, setGraphData] = useState<GraphData>({
+    graph: null,
+    focusedNode: "Origin",
+  });
 
   // App Bar State
   const [search, setSearch] = useState("");
   const [showError, setShowError] = useState(false);
-  const [showSpeedDial, setShowSpeedDial] = useState(false);
-
-  const toggleSpeedDial = () => {
-    setShowSpeedDial(!showSpeedDial);
-  };
 
   // Modal State
-  const [modalType, setModalType] = useState("");
   const [showNoNodeError, setShowNoNodeError] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => setOpenModal(false);
+  const [modalData, setModalData] = useState<ModalData>({
+    selectedNode: "",
+    modalType: "",
+    openModal: false,
+    showSpeedDial: false,
+  });
 
   useEffect(() => {
     isMounted.current = true;
@@ -79,8 +89,12 @@ function App() {
     const skillsArr = Array.from(data.values());
     const learntSkills = skillsArr.filter((skill) => !skill.learning);
     if (search === "") {
-      setFocusedNode("Origin");
-      setGraph(graphDataTransformer(learntSkills, "normal"));
+      setGraphData((data) => {
+        return {
+          focusedNode: "Origin",
+          graph: graphDataTransformer(learntSkills, "normal"),
+        };
+      });
     } else if (data.get(search) && !data.get(search).learning) {
       const originEdge = {
         from: "Origin",
@@ -95,8 +109,12 @@ function App() {
       if (!newGraph.edges.includes(originEdge)) {
         newGraph.edges.push(originEdge);
       }
-      setFocusedNode(search);
-      setGraph(newGraph);
+      setGraphData((data) => {
+        return {
+          focusedNode: search,
+          graph: newGraph,
+        };
+      });
     } else {
       setShowError(true);
     }
@@ -111,8 +129,7 @@ function App() {
           search={search}
           setSearch={setSearch}
           handleSearch={handleSearch}
-          setGraph={setGraph}
-          setFocusedNode={setFocusedNode}
+          setGraphData={setGraphData}
         />
         <ErrorSnackBar
           key={"SearchError"}
@@ -128,33 +145,28 @@ function App() {
         />
         <NodeOptionModals
           theme={theme}
-          selectedNode={selectedNode}
-          type={modalType}
-          openModal={openModal}
+          selectedNode={modalData.selectedNode}
+          type={modalData.modalType}
+          openModal={modalData.openModal}
           skillsData={skillsData}
-          handleOpenModal={handleOpenModal}
-          handleCloseModal={handleCloseModal}
+          setModalData={setModalData}
         />
         <GraphCanvas
           theme={theme}
-          graph={graph}
+          graph={graphData.graph}
           network={network}
-          focusedNode={focusedNode}
+          focusedNode={graphData.focusedNode}
           setNetwork={setNetwork}
-          setShowSpeedDial={setShowSpeedDial}
-          setSelectedNode={setSelectedNode}
+          setModalData={setModalData}
         />
         <BottomAppBar
           hideUI={hideUI}
-          selectedNode={selectedNode}
           skillsData={skillsData}
-          showSpeedDial={showSpeedDial}
-          setFocusedNode={setFocusedNode}
+          selectedNode={modalData.selectedNode}
+          showSpeedDial={modalData.showSpeedDial}
           setShowNoNodeError={setShowNoNodeError}
-          setGraph={setGraph}
-          setModalType={setModalType}
-          handleOpenModal={handleOpenModal}
-          toggleSpeedDial={toggleSpeedDial}
+          setGraphData={setGraphData}
+          setModalData={setModalData}
         />
         <SpeedDial
           network={network}

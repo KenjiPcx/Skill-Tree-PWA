@@ -11,6 +11,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useSpring, animated } from "react-spring";
 import generateAppInfoNodes from "../utils/generateAppInfoNodes";
+import { GraphData } from "../App";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,8 +60,7 @@ interface SearchAppBarProps {
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   handleSearch: (e: React.FormEvent<HTMLFormElement>) => void;
-  setFocusedNode: React.Dispatch<React.SetStateAction<string>>;
-  setGraph: React.Dispatch<any>;
+  setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
 }
 
 export default function SearchAppBar({
@@ -68,8 +68,7 @@ export default function SearchAppBar({
   search,
   setSearch,
   handleSearch,
-  setFocusedNode,
-  setGraph,
+  setGraphData,
 }: SearchAppBarProps) {
   const topTranslation = useSpring({
     delay: hideUI ? 0 : 50,
@@ -77,8 +76,13 @@ export default function SearchAppBar({
   });
 
   const handleInjectAppInfo = () => {
-    setFocusedNode("App Info");
-    setGraph(generateAppInfoNodes());
+    setGraphData((data: GraphData) => {
+      return {
+        ...data,
+        focusedNode: "App Info",
+        graph: generateAppInfoNodes(),
+      };
+    });
   };
 
   return (

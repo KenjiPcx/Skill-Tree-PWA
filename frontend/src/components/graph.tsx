@@ -2,6 +2,7 @@ import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
 import { Theme } from "@material-ui/core/styles";
+import { ModalData } from "../App";
 
 interface GraphCanvasProps {
   theme: Theme;
@@ -9,8 +10,7 @@ interface GraphCanvasProps {
   network: any;
   focusedNode: string;
   setNetwork: React.Dispatch<any>;
-  setSelectedNode: React.Dispatch<any>;
-  setShowSpeedDial: React.Dispatch<any>;
+  setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
 }
 
 function GraphCanvas({
@@ -19,8 +19,7 @@ function GraphCanvas({
   network,
   focusedNode,
   setNetwork,
-  setSelectedNode,
-  setShowSpeedDial,
+  setModalData,
 }: GraphCanvasProps) {
   const graphRef = useRef(null);
 
@@ -144,15 +143,26 @@ function GraphCanvas({
   }, [theme]);
 
   const events = {
-    selectNode: function (event: any) {
+    select: function (event: any) {
       const { nodes, edges } = event;
-      setSelectedNode(nodes[0]);
-      setShowSpeedDial(true)
+      console.log("Select", nodes);
+      setModalData((data) => {
+        return {
+          ...data,
+          selectedNode: nodes[0],
+          showSpeedDial: nodes[0] ? true : false,
+        };
+      });
     },
-    deselectNode: function (event: any) {
-      const { nodes, edges } = event;
-      setSelectedNode("");
-      setShowSpeedDial(false);
+    hold: function (event: any) {
+      console.log("called");
+      setModalData((data) => {
+        return {
+          ...data,
+          modalType: "info",
+          openModal: true,
+        };
+      });
     },
   };
 

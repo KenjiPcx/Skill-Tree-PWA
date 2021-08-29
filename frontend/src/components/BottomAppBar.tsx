@@ -18,17 +18,15 @@ import { styled } from "@material-ui/core/styles";
 import graphDataTransformer from "../utils/graphDataTransformer";
 import generateStatsNodes from "../utils/generateStatsNodes";
 import generateTimelineNodes from "../utils/generateTimelineNodes";
+import { ModalData, GraphData } from "../App";
 interface BottomAppBarProps {
   hideUI: boolean;
   selectedNode: any;
   skillsData: Map<string, any>;
   showSpeedDial: boolean;
   setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
-  setFocusedNode: React.Dispatch<React.SetStateAction<string>>;
-  setGraph: React.Dispatch<any>;
-  setModalType: React.Dispatch<React.SetStateAction<string>>;
-  toggleSpeedDial: () => void;
-  handleOpenModal: () => void;
+  setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
+  setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
 }
 
 const NotchMargin = styled("div")({
@@ -52,11 +50,8 @@ export default function BottomAppBar({
   skillsData,
   showSpeedDial,
   setShowNoNodeError,
-  setFocusedNode,
-  setGraph,
-  setModalType,
-  toggleSpeedDial,
-  handleOpenModal
+  setGraphData,
+  setModalData,
 }: BottomAppBarProps) {
   const botTranslation = useSpring({
     delay: hideUI ? 0 : 50,
@@ -66,19 +61,34 @@ export default function BottomAppBar({
   const resetInjections = () => {
     const skillsArr = Array.from(skillsData.values());
     const learnedSkills = skillsArr.filter((skill) => !skill.learning);
-    setFocusedNode("Origin");
-    setGraph(graphDataTransformer(learnedSkills, "normal"));
+    setGraphData((data: GraphData) => {
+      return {
+        ...data,
+        focusedNode: "Origin",
+        graph: graphDataTransformer(learnedSkills, "normal"),
+      };
+    });
   };
 
   const handleInjectStats = () => {
-    setFocusedNode("Origin");
-    setGraph(generateStatsNodes(skillsData));
+    setGraphData((data: GraphData) => {
+      return {
+        ...data,
+        focusedNode: "Origin",
+        graph: generateStatsNodes(skillsData),
+      };
+    });
   };
 
   const handleInjectLearningSkills = () => {
     const skillsArr = Array.from(skillsData.values());
-    setFocusedNode("Origin");
-    setGraph(graphDataTransformer(skillsArr, "normal"));
+    setGraphData((data: GraphData) => {
+      return {
+        ...data,
+        focusedNode: "Origin",
+        graph: graphDataTransformer(skillsArr, "normal"),
+      };
+    });
   };
 
   const handleInjectTimeline = () => {
@@ -86,7 +96,13 @@ export default function BottomAppBar({
       generateTimelineNodes(skillsData),
       "timeline"
     );
-    setGraph(graph);
+    setGraphData((data: GraphData) => {
+      return {
+        ...data,
+        focusedNode: "Origin",
+        graph: graph,
+      };
+    });
   };
 
   return (
@@ -99,13 +115,10 @@ export default function BottomAppBar({
       >
         <NotchMargin />
         <RadialSpeedDial
-          hideUI={hideUI}
           showSpeedDial={showSpeedDial}
           selectedNode={selectedNode}
           setShowNoNodeError={setShowNoNodeError}
-          setModalType={setModalType}
-          handleOpenModal={handleOpenModal}
-          toggleSpeedDial={toggleSpeedDial}
+          setModalData={setModalData}
         />
         <Toolbar>
           <Tooltip title="Knowledge Network">
