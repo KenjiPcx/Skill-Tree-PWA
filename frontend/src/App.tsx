@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import "./App.css";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -28,9 +29,14 @@ export interface GraphData {
   focusedNode: string;
 }
 
+export interface ErrorData {
+  errorMsg: string;
+  showError: boolean;
+}
+
 function App() {
   const isMounted = useRef<boolean | null>(null);
-  console.log("Render App");
+
   // App Settings
   const [theme, setTheme] = useState(lightTheme);
   const [hideUI, setHideUI] = useState(false);
@@ -49,10 +55,12 @@ function App() {
 
   // App Bar State
   const [search, setSearch] = useState("");
-  const [showError, setShowError] = useState(false);
+  const [errorData, setErrorData] = useState<ErrorData>({
+    errorMsg: "",
+    showError: false,
+  });
 
   // Modal State
-  const [showNoNodeError, setShowNoNodeError] = useState(false);
   const [modalData, setModalData] = useState<ModalData>({
     selectedNode: "",
     modalType: "",
@@ -89,9 +97,9 @@ function App() {
     const skillsArr = Array.from(data.values());
     const learntSkills = skillsArr.filter((skill) => !skill.learning);
     if (search === "") {
-      setGraphData((data) => {
+      setGraphData((data: GraphData) => {
         return {
-          focusedNode: "Origin",
+          ...data,
           graph: graphDataTransformer(learntSkills, "normal"),
         };
       });
@@ -109,72 +117,107 @@ function App() {
       if (!newGraph.edges.includes(originEdge)) {
         newGraph.edges.push(originEdge);
       }
-      setGraphData((data) => {
+      setGraphData((data: GraphData) => {
         return {
           focusedNode: search,
           graph: newGraph,
         };
       });
     } else {
-      setShowError(true);
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "No Result Found",
+          showError: true
+        }
+      });
     }
   };
+
+  const memoTopAppBar = useMemo(() => {
+    return (
+      <SearchAppBar
+        hideUI={hideUI}
+        search={search}
+        setSearch={setSearch}
+        handleSearch={handleSearch}
+        setGraphData={setGraphData}
+      />
+    );
+  }, [hideUI, search]);
+
+  const memoErrorSnackbar = useMemo(() => {
+    return (
+      <ErrorSnackBar
+        errorMsg={errorData.errorMsg}
+        showError={errorData.showError}
+        setErrorData={setErrorData}
+      />
+    );
+  }, [errorData]);
+
+  const memoModals = useMemo(() => {
+    return (
+      <NodeOptionModals
+        theme={theme}
+        selectedNode={modalData.selectedNode}
+        type={modalData.modalType}
+        openModal={modalData.openModal}
+        skillsData={skillsData}
+        setModalData={setModalData}
+      />
+    );
+  }, [modalData.openModal, theme]);
+
+  const memoGraph = useMemo(() => {
+    return (
+      <GraphCanvas
+        theme={theme}
+        graph={graphData.graph}
+        network={network}
+        focusedNode={graphData.focusedNode}
+        setNetwork={setNetwork}
+        setModalData={setModalData}
+        setErrorData={setErrorData}
+      />
+    );
+  }, [graphData, network, theme]);
+
+  const memoBottomAppBar = useMemo(() => {
+    return (
+      <BottomAppBar
+        hideUI={hideUI}
+        skillsData={skillsData}
+        selectedNode={modalData.selectedNode}
+        showSpeedDial={modalData.showSpeedDial}
+        setGraphData={setGraphData}
+        setModalData={setModalData}
+        setErrorData={setErrorData}
+      />
+    );
+  }, [hideUI, modalData, skillsData]);
+
+  const memoSpeedDial = useMemo(() => {
+    return (
+      <SpeedDial
+        network={network}
+        hideUI={hideUI}
+        toggleHideUI={toggleHideUI}
+        theme={theme}
+        setTheme={setTheme}
+      />
+    );
+  }, [network, hideUI, theme]);
 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <SearchAppBar
-          hideUI={hideUI}
-          search={search}
-          setSearch={setSearch}
-          handleSearch={handleSearch}
-          setGraphData={setGraphData}
-        />
-        <ErrorSnackBar
-          key={"SearchError"}
-          errorMsg={"No Node Found"}
-          showError={showError}
-          setShowError={setShowError}
-        />
-        <ErrorSnackBar
-          key={"NoNodeError"}
-          errorMsg={"No Node Selected"}
-          showError={showNoNodeError}
-          setShowError={setShowNoNodeError}
-        />
-        <NodeOptionModals
-          theme={theme}
-          selectedNode={modalData.selectedNode}
-          type={modalData.modalType}
-          openModal={modalData.openModal}
-          skillsData={skillsData}
-          setModalData={setModalData}
-        />
-        <GraphCanvas
-          theme={theme}
-          graph={graphData.graph}
-          network={network}
-          focusedNode={graphData.focusedNode}
-          setNetwork={setNetwork}
-          setModalData={setModalData}
-        />
-        <BottomAppBar
-          hideUI={hideUI}
-          skillsData={skillsData}
-          selectedNode={modalData.selectedNode}
-          showSpeedDial={modalData.showSpeedDial}
-          setShowNoNodeError={setShowNoNodeError}
-          setGraphData={setGraphData}
-          setModalData={setModalData}
-        />
-        <SpeedDial
-          network={network}
-          hideUI={hideUI}
-          toggleHideUI={toggleHideUI}
-          theme={theme}
-          setTheme={setTheme}
-        />
+        {memoTopAppBar}
+        {memoErrorSnackbar}
+        {memoModals}
+        {memoGraph}
+        {memoBottomAppBar}
+        {memoSpeedDial}
       </ThemeProvider>
     </div>
   );

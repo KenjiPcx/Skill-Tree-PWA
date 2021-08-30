@@ -18,25 +18,24 @@ function ModalAddForm({ selectedNode, handleCloseModal }: ModalAddFormProps) {
   const [imageURL, setImageURL] = useState("");
   const [yearStarted, setYearStarted] = useState("");
 
-  const resetForm = () => {
-    setName("");
-    setGroup("");
-    setImageURL("");
-    setYearStarted("");
-    handleCloseModal();
-  };
-
   const handleAddNode = () => {
-    addNode({
+    const skill = {
       name,
       parent: selectedNode,
       group,
       yearStarted,
       imageURL,
       usedFrequency: 0,
-    })
+    };
+
+    setName("");
+    setGroup("");
+    setImageURL("");
+    setYearStarted("");
+
+    addNode(skill)
       .then(() => {
-        resetForm();
+        handleCloseModal();
       })
       .catch(console.log);
   };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -16,22 +16,11 @@ function ModalUpdataForm({
   selectedNode,
   handleCloseModal,
 }: ModalUpdateFormProps) {
-  const [name, setName] = useState("");
   const [parent, setParent] = useState("");
   const [group, setGroup] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [yearStarted, setYearStarted] = useState("");
   const [usedFrequency, setUsedFrequency] = useState("");
-
-  const resetForm = () => {
-    setName("");
-    setParent("");
-    setGroup("");
-    setImageURL("");
-    setYearStarted("");
-    setUsedFrequency("");
-    handleCloseModal();
-  };
 
   const handleUpdateNode = () => {
     let skill: any = {
@@ -52,9 +41,16 @@ function ModalUpdataForm({
     if (yearStarted !== "") {
       skill.yearStarted = yearStarted;
     }
+    
+    setParent("");
+    setGroup("");
+    setImageURL("");
+    setYearStarted("");
+    setUsedFrequency("");
+    
     updateNode(skill)
       .then(() => {
-        resetForm();
+        handleCloseModal();
       })
       .catch(console.log);
   };
@@ -84,7 +80,6 @@ function ModalUpdataForm({
           disabled
           sx={{ ...sx, mb: 0 }}
           value={selectedNode}
-          onChange={(e) => setName(e.target.value)}
         />
         <Typography variant="subtitle2" color="red" sx={{ mb: 0.5 }}>
           Name of node cannot be changed.

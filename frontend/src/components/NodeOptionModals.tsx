@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Backdrop from "@material-ui/core/Backdrop";
 import Box from "@material-ui/core/Box";
 import Modal from "@material-ui/core/Modal";
 import Fade from "@material-ui/core/Fade";
-import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { Theme } from "@material-ui/core/styles";
 
@@ -11,6 +10,8 @@ import { ModalData } from "../App";
 import ModalUpdateForm from "./NodeModalData/ModalUpdateForm";
 import ModalAddForm from "./NodeModalData/ModalAddForm";
 import ModalDeleteNode from "./NodeModalData/ModalDeleteNode";
+import ModalNodeInfo from "./NodeModalData/ModalNodeInfo";
+import ModalOriginNode from "./NodeModalData/ModalOriginNode";
 
 interface NodeOptionModalsProps {
   theme: Theme;
@@ -29,8 +30,6 @@ function NodeOptionModals({
   skillsData,
   setModalData,
 }: NodeOptionModalsProps) {
-  console.log("Render", selectedNode);
-
   const handleCloseModal = () =>
     setModalData((data) => {
       return {
@@ -66,15 +65,11 @@ function NodeOptionModals({
         );
 
       case "info":
-        const skillData = skillsData.get(selectedNode);
-        // console.log(skillData)
-        return (
-          <>
-            <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
-              Node Info
-            </Typography>
-          </>
-        );
+        if (selectedNode === "Origin") {
+          // return origin modal
+          return <ModalOriginNode skillsData={skillsData} />;
+        }
+        return <ModalNodeInfo skillData={skillsData.get(selectedNode)} />;
 
       default:
         return <Container>Default</Container>;
@@ -92,6 +87,7 @@ function NodeOptionModals({
       BackdropProps={{
         timeout: 500,
       }}
+      sx={{ maxWidth: "450px", m: "auto auto" }}
     >
       <Fade in={openModal}>
         <Box

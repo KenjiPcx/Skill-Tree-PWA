@@ -8,7 +8,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { Tooltip } from "@material-ui/core";
 
 import { useSpring, animated } from "react-spring";
-import { ModalData } from "../App";
+import { ModalData, GraphData, ErrorData } from "../App";
 
 const FabContainer = styled("div")({
   position: "absolute",
@@ -36,15 +36,17 @@ const AnimatedFab = animated(StyledFab);
 interface RadialSpeedDialProps {
   showSpeedDial: boolean;
   selectedNode: string;
-  setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
   setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
+  setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
+  setErrorData: React.Dispatch<React.SetStateAction<ErrorData>>;
 }
 
 const RadialSpeedDial = ({
   showSpeedDial,
   selectedNode,
-  setShowNoNodeError,
   setModalData,
+  setGraphData,
+  setErrorData,
 }: RadialSpeedDialProps) => {
   const leftFabTranslation = useSpring({
     config: { duration: animationDuration },
@@ -79,7 +81,19 @@ const RadialSpeedDial = ({
 
   const handleOpenDeleteModal = () => {
     if (selectedNode === "") {
-      setShowNoNodeError(true);
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "No Node Selected",
+          showError: true,
+        };
+      });
+    } else if (selectedNode === "Origin") {
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "You Can't Delete Yourself",
+          showError: true,
+        };
+      });
     } else {
       setModalData((data: ModalData) => {
         return {
@@ -88,12 +102,23 @@ const RadialSpeedDial = ({
           modalType: "delete",
         };
       });
+      setGraphData((data: GraphData) => {
+        return {
+          ...data,
+          focusedNode: "Origin",
+        };
+      });
     }
   };
 
   const handleOpenAddModal = () => {
     if (selectedNode === "") {
-      setShowNoNodeError(true);
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "No Node Selected",
+          showError: true,
+        };
+      });
     } else {
       setModalData((data: ModalData) => {
         return {
@@ -102,18 +127,42 @@ const RadialSpeedDial = ({
           modalType: "add",
         };
       });
+      setGraphData((data: GraphData) => {
+        return {
+          ...data,
+          focusedNode: selectedNode,
+        };
+      });
     }
   };
 
   const handleOpenEditModal = () => {
     if (selectedNode === "") {
-      setShowNoNodeError(true);
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "No Node Selected",
+          showError: true,
+        };
+      });
+    } else if (selectedNode === "Origin") {
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "You Can't Edit Yourself",
+          showError: true,
+        };
+      });
     } else {
       setModalData((data: ModalData) => {
         return {
           ...data,
           openModal: true,
           modalType: "edit",
+        };
+      });
+      setGraphData((data: GraphData) => {
+        return {
+          ...data,
+          focusedNode: selectedNode,
         };
       });
     }
@@ -162,14 +211,14 @@ const RadialSpeedDial = ({
           style={mainFabRotation}
           color="secondary"
           aria-label="Toggle Node Options"
-          onClick={() =>
+          onClick={() => {
             setModalData((data: ModalData) => {
               return {
                 ...data,
                 showSpeedDial: !data.showSpeedDial,
               };
-            })
-          }
+            });
+          }}
         >
           <AddIcon fontSize="large" />
         </AnimatedFab>

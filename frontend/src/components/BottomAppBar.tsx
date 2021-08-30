@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 
 // Components
 import RadialSpeedDial from "./RadialSpeedDial";
@@ -18,15 +18,15 @@ import { styled } from "@material-ui/core/styles";
 import graphDataTransformer from "../utils/graphDataTransformer";
 import generateStatsNodes from "../utils/generateStatsNodes";
 import generateTimelineNodes from "../utils/generateTimelineNodes";
-import { ModalData, GraphData } from "../App";
+import { ModalData, GraphData, ErrorData } from "../App";
 interface BottomAppBarProps {
   hideUI: boolean;
   selectedNode: any;
   skillsData: Map<string, any>;
   showSpeedDial: boolean;
-  setShowNoNodeError: React.Dispatch<React.SetStateAction<boolean>>;
   setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
   setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
+  setErrorData: React.Dispatch<React.SetStateAction<ErrorData>>;
 }
 
 const NotchMargin = styled("div")({
@@ -49,9 +49,9 @@ export default function BottomAppBar({
   selectedNode,
   skillsData,
   showSpeedDial,
-  setShowNoNodeError,
   setGraphData,
   setModalData,
+  setErrorData,
 }: BottomAppBarProps) {
   const botTranslation = useSpring({
     delay: hideUI ? 0 : 50,
@@ -68,6 +68,12 @@ export default function BottomAppBar({
         graph: graphDataTransformer(learnedSkills, "normal"),
       };
     });
+    setModalData((data: ModalData) => {
+      return {
+        ...data,
+        selectedNode: "",
+      };
+    });
   };
 
   const handleInjectStats = () => {
@@ -76,6 +82,12 @@ export default function BottomAppBar({
         ...data,
         focusedNode: "Origin",
         graph: generateStatsNodes(skillsData),
+      };
+    });
+    setModalData((data: ModalData) => {
+      return {
+        ...data,
+        selectedNode: "",
       };
     });
   };
@@ -87,6 +99,12 @@ export default function BottomAppBar({
         ...data,
         focusedNode: "Origin",
         graph: graphDataTransformer(skillsArr, "normal"),
+      };
+    });
+    setModalData((data: ModalData) => {
+      return {
+        ...data,
+        selectedNode: "",
       };
     });
   };
@@ -103,6 +121,12 @@ export default function BottomAppBar({
         graph: graph,
       };
     });
+    setModalData((data: ModalData) => {
+      return {
+        ...data,
+        selectedNode: "",
+      };
+    });
   };
 
   return (
@@ -117,8 +141,9 @@ export default function BottomAppBar({
         <RadialSpeedDial
           showSpeedDial={showSpeedDial}
           selectedNode={selectedNode}
-          setShowNoNodeError={setShowNoNodeError}
           setModalData={setModalData}
+          setGraphData={setGraphData}
+          setErrorData={setErrorData}
         />
         <Toolbar>
           <Tooltip title="Knowledge Network">

@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
 import { Theme } from "@material-ui/core/styles";
-import { ModalData } from "../App";
+import { ModalData, ErrorData } from "../App";
 
 interface GraphCanvasProps {
   theme: Theme;
@@ -11,6 +11,7 @@ interface GraphCanvasProps {
   focusedNode: string;
   setNetwork: React.Dispatch<any>;
   setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
+  setErrorData: React.Dispatch<React.SetStateAction<ErrorData>>;
 }
 
 function GraphCanvas({
@@ -20,6 +21,7 @@ function GraphCanvas({
   focusedNode,
   setNetwork,
   setModalData,
+  setErrorData,
 }: GraphCanvasProps) {
   const graphRef = useRef(null);
 
@@ -144,23 +146,38 @@ function GraphCanvas({
 
   const events = {
     select: function (event: any) {
-      const { nodes, edges } = event;
-      console.log("Select", nodes);
+      const { nodes } = event;
       setModalData((data) => {
         return {
           ...data,
-          selectedNode: nodes[0],
+          selectedNode: nodes[0] ? nodes[0] : "",
           showSpeedDial: nodes[0] ? true : false,
         };
       });
     },
     hold: function (event: any) {
-      console.log("called");
+      if (!event.nodes[0]) {
+        setErrorData((data: ErrorData) => {
+          return {
+            errorMsg: "No Node Is Selected",
+            showError: true,
+          };
+        });
+      } else {
+        setModalData((data) => {
+          return {
+            ...data,
+            modalType: "info",
+            openModal: true,
+          };
+        });
+      }
+    },
+    click: (event: any) => {
       setModalData((data) => {
         return {
           ...data,
-          modalType: "info",
-          openModal: true,
+          showSpeedDial: !event.nodes[0] ? false : true,
         };
       });
     },
@@ -192,7 +209,7 @@ function GraphCanvas({
       });
       setTimeout(() => {
         network.fit({
-          nodes: [focusedNode],
+          nodes: ["Origin"],
           minZoomLevel: 1,
           animation: true,
         });

@@ -1,26 +1,31 @@
-import React, { useState } from "react";
+import React from "react";
 import IconButton from "@material-ui/core/IconButton";
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/core/Alert";
+import { ErrorData } from "../App";
 
 interface ErrorSnackBarProps {
   errorMsg: string;
   showError: boolean;
-  setShowError: React.Dispatch<React.SetStateAction<boolean>>;
+  setErrorData: React.Dispatch<React.SetStateAction<ErrorData>>;
 }
 
 function ErrorSnackBar({
   errorMsg,
   showError,
-  setShowError,
+  setErrorData,
 }: ErrorSnackBarProps) {
   const handleClose = (event: any, reason?: any) => {
-    if (reason && reason === "clickaway") {
-      return;
-    }
-    setShowError(false);
+    if (reason && reason === "clickaway") return;
+    setErrorData((data: ErrorData) => {
+      return {
+        ...data,
+        showError: false,
+      };
+    });
   };
+
   const action = (
     <React.Fragment>
       <IconButton
@@ -36,7 +41,7 @@ function ErrorSnackBar({
   return (
     <Snackbar
       open={showError}
-      autoHideDuration={2000}
+      autoHideDuration={3000}
       onClose={handleClose}
       action={action}
       sx={{
