@@ -5,7 +5,7 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 
 import debounce from "./utils/debounce";
 import AuthProvider from "./components/AuthProvider";
-import { lightTheme } from "./components/Theme";
+import { darkTheme } from "./components/Theme";
 import { ThemeProvider } from "@material-ui/core";
 import SearchAppBar from "./components/SearchAppBar";
 import GraphCanvas from "./components/Graph";
@@ -40,7 +40,7 @@ function App() {
   const isMounted = useRef<boolean | null>(null);
 
   // App Settings
-  const [theme, setTheme] = useState(lightTheme);
+  const [theme, setTheme] = useState(darkTheme);
   const [orientation, setOrientation] = useState("");
   const [hideUI, setHideUI] = useState(false);
 
@@ -229,7 +229,7 @@ function App() {
   }, [network, hideUI, theme]);
 
   useEffect(() => {
-    setHideUI(orientation === "Landscape");
+    setHideUI(orientation === "Landscape" && window.innerHeight < 500);
   }, [orientation]);
 
   return (

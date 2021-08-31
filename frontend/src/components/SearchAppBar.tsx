@@ -89,34 +89,43 @@ export default function SearchAppBar({
     <Box sx={{ flexGrow: 1 }}>
       <AnimatedAppBar position="absolute" style={topTranslation}>
         <Toolbar>
-          <Tooltip title="Menu">
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{
-                flexGrow: 1,
-                flexBasis: "10%",
-              }}
-              onClick={handleInjectAppInfo}
-            >
-              <AccountTreeIcon />
-            </IconButton>
-          </Tooltip>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            align="left"
+          <Box
             sx={{
               flexGrow: 1,
-              flexBasis: "45%",
-              display: { xs: "block", sm: "block" },
+              flexBasis: "65%",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+              ml: 1,
             }}
           >
-            Skill Tree
-          </Typography>
+            <Tooltip title="App Info">
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                sx={{
+                  flexGrow: 0,
+                  width: "max-content",
+                }}
+                onClick={handleInjectAppInfo}
+              >
+                <AccountTreeIcon />
+              </IconButton>
+            </Tooltip>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              align="left"
+              sx={{
+                display: { xs: "block", sm: "block" },
+              }}
+            >
+              Skill Tree
+            </Typography>
+          </Box>
           <form
             style={{ flexGrow: 1, flexBasis: "45%" }}
             onSubmit={handleSearch}
