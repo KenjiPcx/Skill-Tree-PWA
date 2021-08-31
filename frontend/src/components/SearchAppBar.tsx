@@ -130,15 +130,16 @@ export default function SearchAppBar({
             style={{ flexGrow: 1, flexBasis: "45%" }}
             onSubmit={handleSearch}
           >
-            <Search>
-              <SearchIconWrapper onClick={() => console.log(search)}>
-                <SearchIcon onClick={() => console.log(search)} />
+            <Search sx={{ width: "100%" }}>
+              <SearchIconWrapper>
+                <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                sx={{ width: "auto" }}
               />
             </Search>
           </form>
