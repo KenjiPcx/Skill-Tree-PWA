@@ -36,12 +36,22 @@ export interface ErrorData {
   showError: boolean;
 }
 
+export interface ScreenData {
+  width: number;
+  height: number;
+  orientation: string;
+}
+
 function App() {
   const isMounted = useRef<boolean | null>(null);
 
   // App Settings
   const [theme, setTheme] = useState(darkTheme);
-  const [orientation, setOrientation] = useState("");
+  const [screen, setScreen] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+    orientation: ""
+  } as ScreenData);
   const [hideUI, setHideUI] = useState(false);
 
   const toggleHideUI = () => {
@@ -71,17 +81,36 @@ function App() {
     showSpeedDial: false,
   });
 
-  const handleSetOrientation = () => {
+  const handleSetScreen = () => {
     if (window.innerWidth > window.innerHeight) {
-      setOrientation("Landscape");
-    }
-    if (window.innerWidth < window.innerHeight) {
-      setOrientation("Portrait");
+      setScreen((data) => {
+        return {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          orientation: "Landscape",
+        };
+      });
+    } else if (window.innerWidth <= window.innerHeight) {
+      setScreen((data) => {
+        return {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          orientation: "Potrait",
+        };
+      });
+    } else {
+      setScreen((data) => {
+        return {
+          ...data,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      });
     }
   };
 
   const debouncedHandleResize = debounce(() => {
-    handleSetOrientation();
+    handleSetScreen();
   }, 250);
 
   useEffect(() => {
@@ -93,7 +122,7 @@ function App() {
         skills.set(doc.id, doc.data());
       });
       if (isMounted.current) {
-        handleSetOrientation();
+        handleSetScreen();
         setSkillData(skills);
         validateSearch(skills);
       }
@@ -191,7 +220,7 @@ function App() {
     return (
       <GraphCanvas
         theme={theme}
-        orientation={orientation}
+        screen={screen}
         graph={graphData.graph}
         network={network}
         focusedNode={graphData.focusedNode}
@@ -200,7 +229,7 @@ function App() {
         setErrorData={setErrorData}
       />
     );
-  }, [graphData, network, theme, orientation]);
+  }, [graphData, network, theme, screen]);
 
   const memoBottomAppBar = useMemo(() => {
     return (
@@ -229,8 +258,8 @@ function App() {
   }, [network, hideUI, theme]);
 
   useEffect(() => {
-    setHideUI(orientation === "Landscape" && window.innerHeight < 500);
-  }, [orientation]);
+    setHideUI(screen.orientation === "Landscape" && window.innerHeight < 500);
+  }, [screen]);
 
   return (
     <div className="App">

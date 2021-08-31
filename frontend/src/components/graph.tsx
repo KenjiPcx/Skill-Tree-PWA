@@ -2,11 +2,11 @@ import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
 import { Theme } from "@material-ui/core/styles";
-import { ModalData, ErrorData } from "../App";
+import { ModalData, ErrorData, ScreenData } from "../App";
 
 interface GraphCanvasProps {
   theme: Theme;
-  orientation: string;
+  screen: ScreenData;
   graph: any;
   network: any;
   focusedNode: string;
@@ -17,7 +17,7 @@ interface GraphCanvasProps {
 
 function GraphCanvas({
   theme,
-  orientation,
+  screen,
   graph,
   network,
   focusedNode,
@@ -199,7 +199,7 @@ function GraphCanvas({
       );
     }
     return <CircularProgress />;
-  }, [graph, options, orientation]);
+  }, [graph, options, screen]);
 
   useEffect(() => {
     if (network) {
