@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@material-ui/core/Box";
 import CardMedia from "@material-ui/core/CardMedia";
 import Rating from "@material-ui/core/Rating";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
+import LockIcon from "@material-ui/icons/Lock";
+import Fade from "@material-ui/core/Fade";
 import KenjiPic from "../../assets/kenji.png";
 import {
   calcUserStats,
@@ -13,7 +15,10 @@ import {
 import CircularProgress, {
   circularProgressClasses,
 } from "@material-ui/core/CircularProgress";
-
+import TextField from "@material-ui/core/TextField";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+import { useAuth } from "../AuthProvider";
 interface ModalOriginNodeProps {
   skillsData: Map<string, any>;
 }
@@ -24,16 +29,42 @@ const normalise = (value: number, min: number, max: number) => {
 };
 
 function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
+  const loggedIn = useAuth();
+  const [showTextField, setShowTextField] = useState(false);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
   const { totalUsedFreq, avgUsedFreq } = calcUserStats(skillsData);
-  const { color, level, rating, starting, nextLvlReq } = generateNodeInfo(
-    avgUsedFreq,
-    getMult("Origin")
-  );
-  console.log(
-    nextLvlReq,
-    avgUsedFreq,
-    normalise(avgUsedFreq, starting, nextLvlReq)
-  );
+  const { color, colorType, level, rating, starting, nextLvlReq } =
+    generateNodeInfo(avgUsedFreq, getMult("Origin"));
+
+  const handleAuth = (e?: React.SyntheticEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
+    
+    if (!loggedIn) {
+      if (password === "") {
+        setShowTextField((val) => !val);
+        return;
+      }
+      signInWithEmailAndPassword(auth, "ken.pcx@outlook.com", password)
+        .then(() => {
+          setPassword("");
+          setShowTextField(false);
+        })
+        .catch(() => {
+          setError(true);
+          setPassword("");
+          setTimeout(() => {
+            setError(false);
+          }, 2000);
+        });
+    } else {
+      signOut(auth).catch(console.log);
+    }
+  };
+
   return (
     <Container
       sx={{
@@ -46,11 +77,7 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
       <Typography align="center" variant="h5" sx={{ fontWeight: "bold" }}>
         Kenji
       </Typography>
-      <Typography
-        variant="subtitle1"
-        color={color}
-        sx={{ mb: 1.5 }}
-      >
+      <Typography variant="subtitle1" color={color} sx={{ mb: 1.5 }}>
         {`<-The One Who Codes->`}
       </Typography>
       <Box
@@ -59,8 +86,10 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          position: "relative",
           my: 2,
         }}
+        onClick={handleAuth}
       >
         <CardMedia
           component="img"
@@ -93,6 +122,11 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
             },
           }}
         />
+        <Fade in={!loggedIn}>
+          <LockIcon
+            sx={{ position: "absolute", right: -5, bottom: 0, zIndex: 10 }}
+          />
+        </Fade>
       </Box>
       <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
         Level:{" "}
@@ -110,7 +144,25 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
       <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "bold" }}>
         Experience: {totalUsedFreq}Exp
       </Typography>
-      <Typography align="center" paragraph sx={{mt: 1}}>He is a man of focus, commitment, sheer will</Typography>
+      <Box component="form" onSubmit={handleAuth} sx={{ width: "85%" }}>
+        {showTextField ? (
+          <TextField
+            error={error}
+            variant="outlined"
+            label="Password"
+            type="password"
+            color={colorType}
+            sx={{ mt: 2, mb: 2, width: "100%" }}
+            size="small"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        ) : (
+          <Typography align="center" paragraph sx={{ mt: 1 }}>
+            He is a man of focus, commitment, sheer will
+          </Typography>
+        )}
+      </Box>
       <Rating name="read-only" value={rating} readOnly />
     </Container>
   );

@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import "./App.css";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+import debounce from "./utils/debounce";
+import AuthProvider from "./components/AuthProvider";
 import { lightTheme } from "./components/Theme";
 import { ThemeProvider } from "@material-ui/core";
 import SearchAppBar from "./components/SearchAppBar";
@@ -12,7 +14,7 @@ import SpeedDial from "./components/SpeedDial";
 import ErrorSnackBar from "./components/ErrorSnackBar";
 import NodeOptionModals from "./components/NodeOptionModals";
 
-import db from "./firebase";
+import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import graphDataTransformer from "./utils/graphDataTransformer";
 import filterNodesData from "./utils/filterNodesData";
@@ -39,6 +41,7 @@ function App() {
 
   // App Settings
   const [theme, setTheme] = useState(lightTheme);
+  const [orientation, setOrientation] = useState("");
   const [hideUI, setHideUI] = useState(false);
 
   const toggleHideUI = () => {
@@ -68,14 +71,29 @@ function App() {
     showSpeedDial: false,
   });
 
+  const handleSetOrientation = () => {
+    if (window.innerWidth > window.innerHeight) {
+      setOrientation("Landscape");
+    }
+    if (window.innerWidth < window.innerHeight) {
+      setOrientation("Portrait");
+    }
+  };
+
+  const debouncedHandleResize = debounce(() => {
+    handleSetOrientation();
+  }, 250);
+
   useEffect(() => {
     isMounted.current = true;
+    window.addEventListener("resize", debouncedHandleResize);
     const unsub = onSnapshot(collection(db, "nodes"), (querySnapshot) => {
       const skills: Map<string, any> = new Map();
       querySnapshot.forEach((doc) => {
         skills.set(doc.id, doc.data());
       });
       if (isMounted.current) {
+        handleSetOrientation();
         setSkillData(skills);
         validateSearch(skills);
       }
@@ -83,6 +101,7 @@ function App() {
 
     return () => {
       unsub();
+      window.removeEventListener("resize", debouncedHandleResize);
       isMounted.current = false;
     };
   }, []);
@@ -127,8 +146,8 @@ function App() {
       setErrorData((data: ErrorData) => {
         return {
           errorMsg: "No Result Found",
-          showError: true
-        }
+          showError: true,
+        };
       });
     }
   };
@@ -172,6 +191,7 @@ function App() {
     return (
       <GraphCanvas
         theme={theme}
+        orientation={orientation}
         graph={graphData.graph}
         network={network}
         focusedNode={graphData.focusedNode}
@@ -180,7 +200,7 @@ function App() {
         setErrorData={setErrorData}
       />
     );
-  }, [graphData, network, theme]);
+  }, [graphData, network, theme, orientation]);
 
   const memoBottomAppBar = useMemo(() => {
     return (
@@ -208,17 +228,23 @@ function App() {
     );
   }, [network, hideUI, theme]);
 
+  useEffect(() => {
+    setHideUI(orientation === "Landscape");
+  }, [orientation]);
+
   return (
     <div className="App">
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {memoTopAppBar}
-        {memoErrorSnackbar}
-        {memoModals}
-        {memoGraph}
-        {memoBottomAppBar}
-        {memoSpeedDial}
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {memoTopAppBar}
+          {memoErrorSnackbar}
+          {memoModals}
+          {memoGraph}
+          {memoBottomAppBar}
+          {memoSpeedDial}
+        </ThemeProvider>
+      </AuthProvider>
     </div>
   );
 }

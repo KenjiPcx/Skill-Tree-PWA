@@ -6,6 +6,7 @@ import {
   updateDoc,
   setDoc,
 } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -17,8 +18,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-initializeApp(firebaseConfig);
-const db = getFirestore();
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
 export const addNode = async (skill: any) => {
   try {
@@ -43,5 +45,3 @@ export const deleteNode = async (name: string) => {
     console.log("Failed To Delete Node");
   }
 };
-
-export default db;

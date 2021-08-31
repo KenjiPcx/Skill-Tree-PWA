@@ -6,6 +6,7 @@ import { ModalData, ErrorData } from "../App";
 
 interface GraphCanvasProps {
   theme: Theme;
+  orientation: string;
   graph: any;
   network: any;
   focusedNode: string;
@@ -16,6 +17,7 @@ interface GraphCanvasProps {
 
 function GraphCanvas({
   theme,
+  orientation,
   graph,
   network,
   focusedNode,
@@ -197,7 +199,7 @@ function GraphCanvas({
       );
     }
     return <CircularProgress />;
-  }, [graph, options]);
+  }, [graph, options, orientation]);
 
   useEffect(() => {
     if (network) {

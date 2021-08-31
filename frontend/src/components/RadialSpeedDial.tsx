@@ -9,6 +9,7 @@ import { Tooltip } from "@material-ui/core";
 
 import { useSpring, animated } from "react-spring";
 import { ModalData, GraphData, ErrorData } from "../App";
+import { useAuth } from "./AuthProvider";
 
 const FabContainer = styled("div")({
   position: "absolute",
@@ -48,6 +49,8 @@ const RadialSpeedDial = ({
   setGraphData,
   setErrorData,
 }: RadialSpeedDialProps) => {
+  const loggedIn = useAuth();
+
   const leftFabTranslation = useSpring({
     config: { duration: animationDuration },
     opacity: showSpeedDial ? 1 : 0,
@@ -80,6 +83,15 @@ const RadialSpeedDial = ({
   });
 
   const handleOpenDeleteModal = () => {
+    if (!loggedIn) {
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "Only Kenji Can Do This",
+          showError: true,
+        };
+      });
+      return
+    }
     if (selectedNode === "") {
       setErrorData((data: ErrorData) => {
         return {
@@ -112,6 +124,15 @@ const RadialSpeedDial = ({
   };
 
   const handleOpenAddModal = () => {
+    if (!loggedIn) {
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "Only Kenji Can Do This",
+          showError: true,
+        };
+      });
+      return;
+    }
     if (selectedNode === "") {
       setErrorData((data: ErrorData) => {
         return {
@@ -137,6 +158,15 @@ const RadialSpeedDial = ({
   };
 
   const handleOpenEditModal = () => {
+    if (!loggedIn) {
+      setErrorData((data: ErrorData) => {
+        return {
+          errorMsg: "Only Kenji Can Do This",
+          showError: true,
+        };
+      });
+      return;
+    }
     if (selectedNode === "") {
       setErrorData((data: ErrorData) => {
         return {
