@@ -5,6 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
+import Tooltip from "@material-ui/core/Tooltip";
 import { addNode } from "../../firebase";
 
 interface ModalAddFormProps {
@@ -21,7 +22,7 @@ function ModalAddForm({ selectedNode, handleCloseModal }: ModalAddFormProps) {
     };
   }, []);
 
-  const nextYear = new Date().getFullYear() + 1;
+  const nextYear = new Date().getFullYear() - 2;
   const [name, setName] = useState("");
   const [group, setGroup] = useState("");
   const [imageURL, setImageURL] = useState("");
@@ -31,8 +32,8 @@ function ModalAddForm({ selectedNode, handleCloseModal }: ModalAddFormProps) {
   const generateYearOptions = (rows: number) => {
     return [...Array(rows)].map((row, val) => {
       return (
-        <MenuItem key={val} value={nextYear - val}>
-          {nextYear - val}
+        <MenuItem key={val} value={nextYear + val}>
+          {nextYear + val}
         </MenuItem>
       );
     });
@@ -148,21 +149,23 @@ function ModalAddForm({ selectedNode, handleCloseModal }: ModalAddFormProps) {
           value={yearStarted}
           onChange={(e) => setYearStarted(e.target.value)}
         >
-          {generateYearOptions(4)}
+          {generateYearOptions(5)}
         </TextField>
-        <Fab
-          color="secondary"
-          aria-label="add"
-          sx={{
-            position: "absolute",
-            left: "50%",
-            bottom: "-25px",
-            transform: "translateX(-50%)",
-          }}
-          onClick={handleAddNode}
-        >
-          <AddIcon />
-        </Fab>
+        <Tooltip title="Add Node">
+          <Fab
+            color="secondary"
+            aria-label="add"
+            sx={{
+              position: "absolute",
+              left: "50%",
+              bottom: "-25px",
+              transform: "translateX(-50%)",
+            }}
+            onClick={handleAddNode}
+          >
+            <AddIcon />
+          </Fab>
+        </Tooltip>
       </Box>
     </>
   );

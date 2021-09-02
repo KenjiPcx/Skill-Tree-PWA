@@ -1,14 +1,5 @@
 import graphDataTransformer from "./graphDataTransformer";
-
-type InfoNode = {
-  learning?: boolean;
-  id?: string;
-  name: string;
-  parent?: string;
-  group: string;
-  usedFrequency?: number;
-  imageURL?: string;
-};
+import { InfoNode } from "../Types";
 
 const generateAppInfoNodes = () => {
   const appInfoNodes: InfoNode[] = [

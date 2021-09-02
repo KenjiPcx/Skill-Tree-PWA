@@ -8,7 +8,6 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { Skill } from "./utils/graphDataTransformer";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -48,10 +47,7 @@ export const deleteNode = async (name: string) => {
   }
 };
 
-export const batchUpdateNodes = async (
-  skills: any[],
-  skill: any,
-) => {
+export const batchUpdateNodes = async (skills: any[], skill: any) => {
   try {
     const batch = writeBatch(db);
     batch.update(doc(db, "nodes", skill.name), skill);
@@ -63,4 +59,3 @@ export const batchUpdateNodes = async (
     console.log("Failed To Batch Update", e);
   }
 };
-

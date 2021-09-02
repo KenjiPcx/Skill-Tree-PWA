@@ -5,8 +5,10 @@ import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fab from "@material-ui/core/Fab";
 import EditIcon from "@material-ui/icons/Edit";
+import Tooltip from "@material-ui/core/Tooltip";
+
 import { updateNode, batchUpdateNodes } from "../../firebase";
-import { Skill } from "../../utils/graphDataTransformer";
+import { Skill } from "../../Types";
 import { getAncestorNodes } from "../../utils/filterNodesData";
 
 interface ModalUpdateFormProps {
@@ -36,56 +38,74 @@ function ModalUpdataForm({
   const [usedFrequency, setUsedFrequency] = useState(
     skillData?.usedFrequency?.toString() as string
   );
-  const [error, setError] = useState(false);
+
+  const generateYearOptions = (rows: number) => {
+    let year = 0;
+    if (skillData.yearStarted) {
+      year = parseInt(skillData.yearStarted) - 1;
+    } else {
+      year = new Date().getFullYear() - 1;
+    }
+    return [...Array(rows)].map((row, val) => {
+      return (
+        <MenuItem key={val} value={year + val}>
+          {year + val}
+        </MenuItem>
+      );
+    });
+  };
+
+  const generateUsageFrequency = (rows: number) => {
+    let usage = 0;
+    if (skillData.usedFrequency && skillData.usedFrequency > 1) {
+      usage = skillData.usedFrequency - 2;
+    }
+    return [...Array(rows)].map((row, val) => {
+      return (
+        <MenuItem key={val} value={usage + val}>
+          {usage + val}
+        </MenuItem>
+      );
+    });
+  };
 
   const handleUpdateNode = async (e?: React.SyntheticEvent) => {
-    if (usedFrequency !== "" && !isNaN(parseInt(usedFrequency))) {
-      let skill: any = {
-        name: selectedNode,
-      };
-      if (parent !== "") {
-        skill.parent = parent;
-      }
-      if (group !== "") {
-        skill.group = group;
-      }
-      if (imageURL !== "") {
-        skill.imageURL = imageURL;
-      }
-      if (yearStarted !== "") {
-        skill.yearStarted = yearStarted;
-      }
-      if (usedFrequency !== "") {
-        skill.usedFrequency = parseInt(usedFrequency);
-        const frequencyGain =
-          parseInt(usedFrequency) - (skillData.usedFrequency as number);
-        const skills = getAncestorNodes(skillsData, selectedNode).map(
-          (skill) => {
-            return {
-              name: skill.name,
-              usedFrequency: (skill.usedFrequency as number) + frequencyGain,
-            };
-          }
-        );
-        await batchUpdateNodes(skills, skill).catch(console.log);
-      } else {
-        await updateNode(skill).catch(console.log);
-      }
-      if (isMounted.current) {
-        setParent("");
-        setGroup("");
-        setImageURL("");
-        setYearStarted("");
-        setUsedFrequency("");
-        handleCloseModal();
-      }
+    let skill: any = {
+      name: selectedNode,
+    };
+    if (parent !== "") {
+      skill.parent = parent;
+    }
+    if (group !== "") {
+      skill.group = group;
+    }
+    if (imageURL !== "") {
+      skill.imageURL = imageURL;
+    }
+    if (yearStarted !== "") {
+      skill.yearStarted = yearStarted;
+    }
+    const frequencyGain =
+      parseInt(usedFrequency) - (skillData.usedFrequency as number);
+    if (frequencyGain !== 0) {
+      skill.usedFrequency = parseInt(usedFrequency);
+      const skills = getAncestorNodes(skillsData, selectedNode).map((skill) => {
+        return {
+          name: skill.name,
+          usedFrequency: (skill.usedFrequency as number) + frequencyGain,
+        };
+      });
+      await batchUpdateNodes(skills, skill).catch(console.log);
     } else {
-      if (isMounted.current) {
-        setError(true);
-        setTimeout(() => {
-          setError(false);
-        }, 1500);
-      }
+      await updateNode(skill).catch(console.log);
+    }
+    if (isMounted.current) {
+      setParent("");
+      setGroup("");
+      setImageURL("");
+      setYearStarted("");
+      setUsedFrequency("");
+      handleCloseModal();
     }
   };
 
@@ -134,7 +154,7 @@ function ModalUpdataForm({
         <TextField
           id="parent"
           label="Parent Node"
-          variant="outlined"
+          variant="filled"
           size="small"
           sx={sx}
           value={parent}
@@ -168,10 +188,11 @@ function ModalUpdataForm({
         ) : (
           ""
         )}
-        <div
-          style={{
-            marginTop: 10,
-            marginBottom: 30,
+        <Box
+          component="div"
+          sx={{
+            marginTop: 1,
+            marginBottom: 3,
             display: "flex",
             justifyContent: "space-between",
           }}
@@ -184,8 +205,10 @@ function ModalUpdataForm({
             sx={{ width: "47.5%" }}
             value={usedFrequency}
             onChange={(e) => setUsedFrequency(e.target.value)}
-            error={error}
-          />
+            select
+          >
+            {generateUsageFrequency(5)}
+          </TextField>
           <TextField
             id="Year"
             label="Year Started"
@@ -196,27 +219,25 @@ function ModalUpdataForm({
             value={yearStarted}
             onChange={(e) => setYearStarted(e.target.value)}
           >
-            <MenuItem value=""></MenuItem>
-            <MenuItem value="2019">2019</MenuItem>
-            <MenuItem value="2020">2020</MenuItem>
-            <MenuItem value="2021">2021</MenuItem>
-            <MenuItem value="2022">2022</MenuItem>
-            <MenuItem value="2023">2023</MenuItem>
+            <MenuItem value="">None</MenuItem>
+            {generateYearOptions(3)}
           </TextField>
-        </div>
-        <Fab
-          color="secondary"
-          aria-label="add"
-          sx={{
-            position: "absolute",
-            left: "50%",
-            bottom: "-25px",
-            transform: "translateX(-50%)",
-          }}
-          onClick={handleUpdateNode}
-        >
-          <EditIcon />
-        </Fab>
+        </Box>
+        <Tooltip title="Save">
+          <Fab
+            color="secondary"
+            aria-label="add"
+            sx={{
+              position: "absolute",
+              left: "50%",
+              bottom: "-25px",
+              transform: "translateX(-50%)",
+            }}
+            onClick={handleUpdateNode}
+          >
+            <EditIcon />
+          </Fab>
+        </Tooltip>
       </Box>
     </>
   );

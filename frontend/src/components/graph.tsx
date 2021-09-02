@@ -2,14 +2,15 @@ import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
 import { Theme } from "@material-ui/core/styles";
-import { ModalData, ErrorData, ScreenData } from "../Types";
+import { ModalData, ErrorData, ScreenData, Skill } from "../Types";
 import { batchUpdateNodes } from "../firebase";
 import { getAncestorNodes } from "../utils/filterNodesData";
-import { Skill } from "../utils/graphDataTransformer";
+import { useAuth } from "./AuthProvider";
 
 interface GraphCanvasProps {
   theme: Theme;
   screen: ScreenData;
+  loading: boolean;
   graph: any;
   network: any;
   skillsData: Map<string, Skill>;
@@ -21,6 +22,7 @@ interface GraphCanvasProps {
 function GraphCanvas({
   theme,
   screen,
+  loading,
   graph,
   network,
   skillsData,
@@ -28,11 +30,22 @@ function GraphCanvas({
   setModalData,
   setErrorData,
 }: GraphCanvasProps) {
+  const loggedIn = useAuth();
   const graphRef = useRef(null);
 
   const updateFirstTimeFreq = async (selectedNode: string) => {
     const skillData = skillsData.get(selectedNode);
     if (skillData && skillData.usedFrequency === 0) {
+      if (!loggedIn) {
+        setErrorData((data: ErrorData) => {
+          return {
+            ...data,
+            errorMsg: "Only Kenji Can Do This",
+            showError: true,
+          };
+        });
+        return;
+      }
       const skill = {
         name: selectedNode,
         usedFrequency: 1,
@@ -43,15 +56,7 @@ function GraphCanvas({
           usedFrequency: (skill.usedFrequency as number) + 1,
         };
       });
-      await batchUpdateNodes(skills, skill).catch((e) => {
-        setErrorData((data: ErrorData) => {
-          return {
-            ...data,
-            errorMsg: "Only Kenji Can Do This",
-            showError: true,
-          };
-        });
-      });
+      await batchUpdateNodes(skills, skill).catch(console.log);
     }
   };
 
@@ -217,7 +222,7 @@ function GraphCanvas({
   };
 
   const displayGraph = useMemo(() => {
-    if (graph) {
+    if (!loading) {
       return (
         <Graph
           ref={graphRef}
@@ -230,7 +235,7 @@ function GraphCanvas({
       );
     }
     return <CircularProgress />;
-  }, [graph, options, screen]);
+  }, [graph, options, screen, loading]);
 
   useEffect(() => {
     if (network) {

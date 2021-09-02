@@ -1,15 +1,4 @@
-import React from "react";
-
-type NodeInfo = {
-  color: string;
-  colorType: "error" | "primary" | "info" | "success" | "warning" | "secondary" | undefined;
-  level: string;
-  rating: number;
-  msg: string;
-  msg2: string;
-  starting: number;
-  nextLvlReq: number;
-};
+import { NodeInfo } from "../Types";
 
 export const calcUserStats = (skillsData: Map<string, any>) => {
   const skills = Array.from(skillsData.values());

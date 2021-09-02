@@ -1,4 +1,3 @@
-import React from "react";
 import { createTheme } from "@material-ui/core/styles";
 
 export const lightTheme = createTheme({

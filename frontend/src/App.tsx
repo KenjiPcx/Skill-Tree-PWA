@@ -16,9 +16,9 @@ import NodeOptionModals from "./components/NodeOptionModals";
 
 import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import graphDataTransformer, { Skill } from "./utils/graphDataTransformer";
+import graphDataTransformer from "./utils/graphDataTransformer";
 import filterNodesData from "./utils/filterNodesData";
-import { ModalData, GraphData, ErrorData, ScreenData } from "./Types";
+import { ModalData, GraphData, ErrorData, ScreenData, Skill } from "./Types";
 
 function App() {
   const isMounted = useRef<boolean | null>(null);
@@ -30,6 +30,7 @@ function App() {
     height: window.innerHeight,
     orientation: "",
   } as ScreenData);
+  const [loading, setLoading] = useState(true);
   const [hideUI, setHideUI] = useState(false);
 
   const toggleHideUI = () => {
@@ -40,7 +41,7 @@ function App() {
   const [network, setNetwork] = useState<any | null>(null);
   const [skillsData, setSkillData] = useState<Map<string, Skill>>(new Map());
   const [graphData, setGraphData] = useState<GraphData>({
-    graph: null,
+    graph: graphDataTransformer([], "normal"),
     graphName: "Knowledge Network",
     focusedNode: "Origin",
   });
@@ -114,7 +115,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (skillsData.size === 0) return
     validateSearch(skillsData);
+    if (loading) {
+      setLoading(false)
+    }
   }, [skillsData]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -214,6 +219,7 @@ function App() {
       <GraphCanvas
         theme={theme}
         screen={screen}
+        loading={loading}
         graph={graphData.graph}
         network={network}
         skillsData={skillsData}
@@ -222,7 +228,7 @@ function App() {
         setErrorData={setErrorData}
       />
     );
-  }, [graphData, network, theme, screen]);
+  }, [graphData, network, theme, screen, loading]);
 
   const memoBottomAppBar = useMemo(() => {
     return (

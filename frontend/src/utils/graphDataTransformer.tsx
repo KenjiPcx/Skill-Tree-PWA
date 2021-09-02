@@ -1,16 +1,5 @@
-import React from "react";
 import KenjiImg from "../assets/kenji.png";
-
-export type Skill = {
-  learning?: boolean;
-  id?: string;
-  name: string;
-  parent?: string;
-  group: string;
-  usedFrequency?: number;
-  imageURL?: string;
-  yearStarted?: string;
-};
+import { Skill } from "../Types"
 
 const generateNode = (data: Skill) => {
   const node = {

@@ -1,4 +1,4 @@
-import { Skill } from "./graphDataTransformer";
+import { Skill } from "../Types";
 
 export const getAncestorNodes = (
   skillsData: Map<string, Skill>,

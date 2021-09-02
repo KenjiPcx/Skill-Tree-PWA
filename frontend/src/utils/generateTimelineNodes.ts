@@ -1,4 +1,4 @@
-import { Skill } from "./graphDataTransformer";
+import { Skill } from "../Types";
 
 const generateTimelineNodes = (skillsMap: Map<string, Skill>) => {
   const skillsArr = Array.from(skillsMap.values());

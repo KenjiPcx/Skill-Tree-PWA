@@ -26,3 +26,42 @@ export interface ScreenData {
   height: number;
   orientation: string;
 }
+
+export type Skill = {
+  learning?: boolean;
+  id?: string;
+  name: string;
+  parent?: string;
+  group: string;
+  usedFrequency?: number;
+  imageURL?: string;
+  yearStarted?: string;
+};
+
+export type NodeInfo = {
+  color: string;
+  colorType:
+    | "error"
+    | "primary"
+    | "info"
+    | "success"
+    | "warning"
+    | "secondary"
+    | undefined;
+  level: string;
+  rating: number;
+  msg: string;
+  msg2: string;
+  starting: number;
+  nextLvlReq: number;
+};
+
+export type InfoNode = {
+  learning?: boolean;
+  id?: string;
+  name: string;
+  parent?: string;
+  group: string;
+  usedFrequency?: number;
+  imageURL?: string;
+};

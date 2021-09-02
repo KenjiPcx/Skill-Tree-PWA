@@ -6,8 +6,7 @@ import Fade from "@material-ui/core/Fade";
 import Container from "@material-ui/core/Container";
 import { Theme } from "@material-ui/core/styles";
 
-import { ModalData } from "../Types";
-import { Skill } from "../utils/graphDataTransformer";
+import { ModalData, Skill } from "../Types";
 import ModalUpdateForm from "./NodeModalData/ModalUpdateForm";
 import ModalAddForm from "./NodeModalData/ModalAddForm";
 import ModalDeleteNode from "./NodeModalData/ModalDeleteNode";
@@ -71,7 +70,13 @@ function NodeOptionModals({
           // return origin modal
           return <ModalOriginNode skillsData={skillsData} />;
         }
-        return <ModalNodeInfo skillData={skillsData.get(selectedNode)} />;
+        return (
+          <ModalNodeInfo
+            selectedNode={selectedNode}
+            skillsData={skillsData}
+            handleCloseModal={handleCloseModal}
+          />
+        );
 
       default:
         return <Container>Default</Container>;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { styled } from "@material-ui/core/styles";
 import Fab from "@material-ui/core/Fab";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";

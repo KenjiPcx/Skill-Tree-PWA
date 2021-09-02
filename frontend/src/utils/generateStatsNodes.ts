@@ -1,6 +1,6 @@
-import graphDataTransformer, { Skill } from "./graphDataTransformer";
+import graphDataTransformer from "./graphDataTransformer";
 import filterNodesData, { pushChildrenNodes } from "./filterNodesData";
-
+import { Skill } from "../Types";
 interface FieldData {
   usedFrequency: number;
   favourites: string[];
