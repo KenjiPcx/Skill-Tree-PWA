@@ -1,3 +1,26 @@
+import { Skill } from "./graphDataTransformer";
+
+export const getAncestorNodes = (
+  skillsData: Map<string, Skill>,
+  skillName: string
+) => {
+  const returnArr: Skill[] = [];
+
+  let currentSkill = skillsData.get(skillName);
+  let parent = currentSkill?.parent as string;
+  while (parent !== "Origin") {
+    currentSkill = skillsData.get(parent);
+    if (currentSkill) {
+      parent = currentSkill.parent as string;
+      returnArr.push(currentSkill);
+    } else {
+      break;
+    }
+  }
+
+  return returnArr;
+};
+
 export const pushChildrenNodes = (
   nodes: any[],
   search: string,

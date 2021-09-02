@@ -2,7 +2,7 @@ import { Skill } from "./graphDataTransformer";
 
 const generateTimelineNodes = (skillsMap: Map<string, Skill>) => {
   const skillsArr = Array.from(skillsMap.values());
-  const skills = skillsArr.filter((skill) => skill.group === "Image");
+  const skills = skillsArr.filter((skill) => skill.group === "Image" && skill.usedFrequency !== 0);
 
   const nodes: Skill[] = [
     {

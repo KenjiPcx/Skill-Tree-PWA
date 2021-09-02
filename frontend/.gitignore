@@ -25,3 +25,7 @@ yarn-error.log*
 
 *.png
 /build
+
+# firebase
+fire[a-z]*
+.fire[a-z]*

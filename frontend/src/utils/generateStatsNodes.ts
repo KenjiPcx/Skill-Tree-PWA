@@ -13,23 +13,25 @@ const generateFieldsStats = (fields: string[], skillsData: Skill[]) => {
     const skillChildren: Skill[] = [];
     pushChildrenNodes(skillsData, field, skillChildren);
 
-    const labelNode: Skill = {
-      id: `${field} Field`,
-      name: field,
-      group: "Subcategory Label",
-      parent: "No Of Skills",
-      usedFrequency: skillChildren.length,
-    };
-    resNodes.push(labelNode);
+    if (skillChildren.length !== 0) {
+      const labelNode: Skill = {
+        id: `${field} Field`,
+        name: field,
+        group: "Subcategory Label",
+        parent: "No Of Skills",
+        usedFrequency: skillChildren.length,
+      };
+      resNodes.push(labelNode);
 
-    const valueNode: Skill = {
-      id: `${field} No Of Skills`,
-      name: ` ${skillChildren.length}`,
-      group: "Stats Node",
-      parent: `${field} Field`,
-      usedFrequency: skillChildren.length,
-    };
-    resNodes.push(valueNode);
+      const valueNode: Skill = {
+        id: `${field} No Of Skills`,
+        name: ` ${skillChildren.length}`,
+        group: "Stats Node",
+        parent: `${field} Field`,
+        usedFrequency: skillChildren.length,
+      };
+      resNodes.push(valueNode);
+    }
   });
 
   return resNodes;

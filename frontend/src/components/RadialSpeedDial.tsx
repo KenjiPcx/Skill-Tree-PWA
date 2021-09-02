@@ -8,7 +8,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import { Tooltip } from "@material-ui/core";
 
 import { useSpring, animated } from "react-spring";
-import { ModalData, GraphData, ErrorData } from "../App";
+import { ModalData, GraphData, ErrorData } from "../Types";
 import { useAuth } from "./AuthProvider";
 
 const FabContainer = styled("div")({

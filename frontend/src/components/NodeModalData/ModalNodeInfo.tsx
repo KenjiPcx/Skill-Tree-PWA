@@ -14,11 +14,14 @@ interface GeneratedVars {
   color: string;
   level: string;
   msg: string;
+  msg2: string;
   rating: number;
 }
 
 function ModalNodeInfo({ skillData }: ModalNodeInfoProps) {
-  const { color, level, msg, rating }: GeneratedVars = generateNodeInfo(
+  const currentYear = new Date().getFullYear();
+
+  const { color, level, msg, msg2, rating }: GeneratedVars = generateNodeInfo(
     skillData.usedFrequency,
     getMult(skillData.group)
   );
@@ -64,7 +67,11 @@ function ModalNodeInfo({ skillData }: ModalNodeInfoProps) {
       )}
       {skillData.yearStarted ? (
         <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-          {`Year Started: ${skillData.yearStarted}`}
+          {`${
+            skillData.yearStarted > currentYear
+              ? "Starting Year"
+              : "Year Started"
+          }: ${skillData.yearStarted}`}
         </Typography>
       ) : (
         ""
@@ -78,14 +85,10 @@ function ModalNodeInfo({ skillData }: ModalNodeInfoProps) {
       </Typography>
       <Typography align="center" paragraph>
         {`Your experience in ${skillData.name} ${msg} `}
-        <Box
-          component="span"
-          sx={{ fontWeight: "bold" }}
-          color={color}
-        >
+        <Box component="span" sx={{ fontWeight: "bold" }} color={color}>
           {level}
         </Box>
-        {` at this.`}
+        {msg2}
       </Typography>
       <Rating name="read-only" value={rating} readOnly />
     </Container>

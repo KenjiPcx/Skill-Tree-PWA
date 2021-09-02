@@ -16,31 +16,9 @@ import NodeOptionModals from "./components/NodeOptionModals";
 
 import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import graphDataTransformer from "./utils/graphDataTransformer";
+import graphDataTransformer, { Skill } from "./utils/graphDataTransformer";
 import filterNodesData from "./utils/filterNodesData";
-
-export interface ModalData {
-  selectedNode: string;
-  modalType: string;
-  openModal: boolean;
-  showSpeedDial: boolean;
-}
-
-export interface GraphData {
-  graph: any;
-  focusedNode: string;
-}
-
-export interface ErrorData {
-  errorMsg: string;
-  showError: boolean;
-}
-
-export interface ScreenData {
-  width: number;
-  height: number;
-  orientation: string;
-}
+import { ModalData, GraphData, ErrorData, ScreenData } from "./Types";
 
 function App() {
   const isMounted = useRef<boolean | null>(null);
@@ -50,7 +28,7 @@ function App() {
   const [screen, setScreen] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
-    orientation: ""
+    orientation: "",
   } as ScreenData);
   const [hideUI, setHideUI] = useState(false);
 
@@ -60,9 +38,10 @@ function App() {
 
   // Graph State
   const [network, setNetwork] = useState<any | null>(null);
-  const [skillsData, setSkillData] = useState<Map<string, any>>(new Map());
+  const [skillsData, setSkillData] = useState<Map<string, Skill>>(new Map());
   const [graphData, setGraphData] = useState<GraphData>({
     graph: null,
+    graphName: "Knowledge Network",
     focusedNode: "Origin",
   });
 
@@ -117,14 +96,13 @@ function App() {
     isMounted.current = true;
     window.addEventListener("resize", debouncedHandleResize);
     const unsub = onSnapshot(collection(db, "nodes"), (querySnapshot) => {
-      const skills: Map<string, any> = new Map();
+      const skills: Map<string, Skill> = new Map();
       querySnapshot.forEach((doc) => {
-        skills.set(doc.id, doc.data());
+        skills.set(doc.id, doc.data() as Skill);
       });
       if (isMounted.current) {
         handleSetScreen();
         setSkillData(skills);
-        validateSearch(skills);
       }
     });
 
@@ -135,6 +113,10 @@ function App() {
     };
   }, []);
 
+  useEffect(() => {
+    validateSearch(skillsData);
+  }, [skillsData]);
+
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch("");
@@ -142,16 +124,24 @@ function App() {
   };
 
   const validateSearch = (data: Map<string, any>) => {
+    const graphName = graphData.graphName;
     const skillsArr = Array.from(data.values());
-    const learntSkills = skillsArr.filter((skill) => !skill.learning);
+    const learntSkills = skillsArr.filter((skill) => skill.usedFrequency !== 0);
+    let dataArr: any[] = [];
+    if (graphName === "Knowledge Network") {
+      dataArr = learntSkills;
+    } else {
+      dataArr = skillsArr;
+    }
+
     if (search === "") {
       setGraphData((data: GraphData) => {
         return {
           ...data,
-          graph: graphDataTransformer(learntSkills, "normal"),
+          graph: graphDataTransformer(dataArr, "normal"),
         };
       });
-    } else if (data.get(search) && !data.get(search).learning) {
+    } else if (data.get(search)) {
       const originEdge = {
         from: "Origin",
         to: search,
@@ -159,7 +149,7 @@ function App() {
         arrowStrikethrough: false,
       };
       const newGraph = graphDataTransformer(
-        filterNodesData(learntSkills, search),
+        filterNodesData(dataArr, search),
         "normal"
       );
       if (!newGraph.edges.includes(originEdge)) {
@@ -167,6 +157,7 @@ function App() {
       }
       setGraphData((data: GraphData) => {
         return {
+          ...data,
           focusedNode: search,
           graph: newGraph,
         };
@@ -174,6 +165,7 @@ function App() {
     } else {
       setErrorData((data: ErrorData) => {
         return {
+          ...data,
           errorMsg: "No Result Found",
           showError: true,
         };
@@ -186,12 +178,13 @@ function App() {
       <SearchAppBar
         hideUI={hideUI}
         search={search}
+        graphName={graphData.graphName}
         setSearch={setSearch}
         handleSearch={handleSearch}
         setGraphData={setGraphData}
       />
     );
-  }, [hideUI, search]);
+  }, [hideUI, search, graphData.graphName]);
 
   const memoErrorSnackbar = useMemo(() => {
     return (
@@ -223,7 +216,7 @@ function App() {
         screen={screen}
         graph={graphData.graph}
         network={network}
-        focusedNode={graphData.focusedNode}
+        skillsData={skillsData}
         setNetwork={setNetwork}
         setModalData={setModalData}
         setErrorData={setErrorData}

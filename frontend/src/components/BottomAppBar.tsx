@@ -18,7 +18,7 @@ import { styled } from "@material-ui/core/styles";
 import graphDataTransformer from "../utils/graphDataTransformer";
 import generateStatsNodes from "../utils/generateStatsNodes";
 import generateTimelineNodes from "../utils/generateTimelineNodes";
-import { ModalData, GraphData, ErrorData } from "../App";
+import { ModalData, GraphData, ErrorData } from "../Types";
 interface BottomAppBarProps {
   hideUI: boolean;
   selectedNode: any;
@@ -60,10 +60,10 @@ export default function BottomAppBar({
 
   const resetInjections = () => {
     const skillsArr = Array.from(skillsData.values());
-    const learnedSkills = skillsArr.filter((skill) => !skill.learning);
+    const learnedSkills = skillsArr.filter((skill) => skill.usedFrequency !== 0);
     setGraphData((data: GraphData) => {
       return {
-        ...data,
+        graphName: "Knowledge Network",
         focusedNode: "Origin",
         graph: graphDataTransformer(learnedSkills, "normal"),
       };
@@ -79,7 +79,7 @@ export default function BottomAppBar({
   const handleInjectStats = () => {
     setGraphData((data: GraphData) => {
       return {
-        ...data,
+        graphName: "Learning Stats",
         focusedNode: "Origin",
         graph: generateStatsNodes(skillsData),
       };
@@ -96,7 +96,7 @@ export default function BottomAppBar({
     const skillsArr = Array.from(skillsData.values());
     setGraphData((data: GraphData) => {
       return {
-        ...data,
+        graphName: "Learning List",
         focusedNode: "Origin",
         graph: graphDataTransformer(skillsArr, "normal"),
       };
@@ -116,7 +116,7 @@ export default function BottomAppBar({
     );
     setGraphData((data: GraphData) => {
       return {
-        ...data,
+        graphName: "Timeline",
         focusedNode: "Origin",
         graph: graph,
       };
@@ -132,7 +132,7 @@ export default function BottomAppBar({
   return (
     <>
       <AnimatedAppBar
-        position="fixed"
+        position="absolute"
         color="primary"
         sx={{ top: "auto", bottom: 0, zIndex: 1 }}
         style={botTranslation}

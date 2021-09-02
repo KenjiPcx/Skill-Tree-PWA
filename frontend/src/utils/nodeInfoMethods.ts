@@ -6,6 +6,7 @@ type NodeInfo = {
   level: string;
   rating: number;
   msg: string;
+  msg2: string;
   starting: number;
   nextLvlReq: number;
 };
@@ -26,6 +27,18 @@ export const calcUserStats = (skillsData: Map<string, any>) => {
 
 export const generateNodeInfo = (usedFrequency: number, mult: number) => {
   switch (true) {
+    case usedFrequency === 0:
+      return {
+        color: "#e3f2fd",
+        colorType: "info",
+        level: "PREPARING",
+        rating: 0,
+        msg: `is non existant. Go start learning!
+                You are `,
+        msg2: " to learn this.",
+        starting: 0,
+        nextLvlReq: 3,
+      } as NodeInfo;
     case usedFrequency < 3 * mult:
       return {
         color: "#ce93d8",
@@ -34,6 +47,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 0,
         msg: `is embarassing.
                 You are a `,
+        msg2: " at this.",
         starting: 0,
         nextLvlReq: 3,
       } as NodeInfo;
@@ -45,6 +59,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 1,
         msg: `has reached a bare minimum level.
                 You are still a `,
+        msg2: " at this.",
         starting: 3,
         nextLvlReq: 5,
       } as NodeInfo;
@@ -56,6 +71,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 2,
         msg: `is finally decent.
                 You seem to be `,
+        msg2: " at this.",
         starting: 5,
         nextLvlReq: 10,
       } as NodeInfo;
@@ -67,6 +83,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 3,
         msg: `is high.
                 You are now an `,
+        msg2: " at this.",
         starting: 10,
         nextLvlReq: 15,
       } as NodeInfo;
@@ -78,6 +95,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 4,
         msg: `is spectacular.
                 You are now an `,
+        msg2: " at this.",
         starting: 15,
         nextLvlReq: 25,
       } as NodeInfo;
@@ -89,6 +107,7 @@ export const generateNodeInfo = (usedFrequency: number, mult: number) => {
         rating: 5,
         msg: `has transcended the system.
                 You are now a `,
+        msg2: " at this.",
         starting: 25,
         nextLvlReq: 25,
       } as NodeInfo;

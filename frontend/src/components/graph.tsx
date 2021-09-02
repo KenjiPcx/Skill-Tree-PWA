@@ -2,14 +2,17 @@ import React, { useMemo, useRef, useEffect } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Graph from "react-graph-vis";
 import { Theme } from "@material-ui/core/styles";
-import { ModalData, ErrorData, ScreenData } from "../App";
+import { ModalData, ErrorData, ScreenData } from "../Types";
+import { batchUpdateNodes } from "../firebase";
+import { getAncestorNodes } from "../utils/filterNodesData";
+import { Skill } from "../utils/graphDataTransformer";
 
 interface GraphCanvasProps {
   theme: Theme;
   screen: ScreenData;
   graph: any;
   network: any;
-  focusedNode: string;
+  skillsData: Map<string, Skill>;
   setNetwork: React.Dispatch<any>;
   setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
   setErrorData: React.Dispatch<React.SetStateAction<ErrorData>>;
@@ -20,12 +23,37 @@ function GraphCanvas({
   screen,
   graph,
   network,
-  focusedNode,
+  skillsData,
   setNetwork,
   setModalData,
   setErrorData,
 }: GraphCanvasProps) {
   const graphRef = useRef(null);
+
+  const updateFirstTimeFreq = async (selectedNode: string) => {
+    const skillData = skillsData.get(selectedNode);
+    if (skillData && skillData.usedFrequency === 0) {
+      const skill = {
+        name: selectedNode,
+        usedFrequency: 1,
+      };
+      const skills = getAncestorNodes(skillsData, selectedNode).map((skill) => {
+        return {
+          name: skill.name,
+          usedFrequency: (skill.usedFrequency as number) + 1,
+        };
+      });
+      await batchUpdateNodes(skills, skill).catch((e) => {
+        setErrorData((data: ErrorData) => {
+          return {
+            ...data,
+            errorMsg: "Only Kenji Can Do This",
+            showError: true,
+          };
+        });
+      });
+    }
+  };
 
   const options = useMemo(() => {
     return {
@@ -183,6 +211,9 @@ function GraphCanvas({
         };
       });
     },
+    doubleClick: (event: any) => {
+      updateFirstTimeFreq(event.nodes[0]);
+    },
   };
 
   const displayGraph = useMemo(() => {
@@ -204,7 +235,7 @@ function GraphCanvas({
   useEffect(() => {
     if (network) {
       network.fit({
-        nodes: [focusedNode],
+        nodes: ["Origin"],
         minZoomLevel: 0.5,
         maxZoomLevel: 1,
         animation: true,

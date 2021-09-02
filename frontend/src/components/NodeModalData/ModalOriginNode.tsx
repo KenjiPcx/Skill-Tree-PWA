@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Box from "@material-ui/core/Box";
 import CardMedia from "@material-ui/core/CardMedia";
 import Rating from "@material-ui/core/Rating";
@@ -29,6 +29,14 @@ const normalise = (value: number, min: number, max: number) => {
 };
 
 function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
+  const isMounted = useRef<boolean | null>(null);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const loggedIn = useAuth();
   const [showTextField, setShowTextField] = useState(false);
   const [password, setPassword] = useState("");
@@ -42,23 +50,37 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
     if (e) {
       e.preventDefault();
     }
-    
+
     if (!loggedIn) {
-      if (password === "") {
+      if (!showTextField) {
         setShowTextField((val) => !val);
+        return;
+      }
+      if (password === "" && showTextField) {
+        setError(true);
+        setTimeout(() => {
+          if (isMounted.current) {
+            setError(false);
+            setShowTextField((val) => !val);
+          }
+        }, 1000);
         return;
       }
       signInWithEmailAndPassword(auth, "ken.pcx@outlook.com", password)
         .then(() => {
-          setPassword("");
-          setShowTextField(false);
+          if (isMounted.current) {
+            setPassword("");
+            setShowTextField(false);
+          }
         })
         .catch(() => {
-          setError(true);
-          setPassword("");
-          setTimeout(() => {
-            setError(false);
-          }, 2000);
+          if (isMounted.current) {
+            setError(true);
+            setPassword("");
+            setTimeout(() => {
+              setError(false);
+            }, 2000);
+          }
         });
     } else {
       signOut(auth).catch(console.log);

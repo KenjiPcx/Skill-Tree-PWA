@@ -11,7 +11,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import Tooltip from "@material-ui/core/Tooltip";
 import { useSpring, animated } from "react-spring";
 import generateAppInfoNodes from "../utils/generateAppInfoNodes";
-import { GraphData } from "../App";
+import { GraphData } from "../Types";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -43,7 +43,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
     width: "100%",
@@ -58,6 +57,12 @@ const AnimatedAppBar = animated(AppBar);
 interface SearchAppBarProps {
   hideUI: boolean;
   search: string;
+  graphName:
+    | "Knowledge Network"
+    | "Learning List"
+    | "Learning Stats"
+    | "Timeline"
+    | "App Info";
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   handleSearch: (e: React.FormEvent<HTMLFormElement>) => void;
   setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
@@ -66,6 +71,7 @@ interface SearchAppBarProps {
 export default function SearchAppBar({
   hideUI,
   search,
+  graphName,
   setSearch,
   handleSearch,
   setGraphData,
@@ -78,7 +84,7 @@ export default function SearchAppBar({
   const handleInjectAppInfo = () => {
     setGraphData((data: GraphData) => {
       return {
-        ...data,
+        graphName: "App Info",
         focusedNode: "App Info",
         graph: generateAppInfoNodes(),
       };
@@ -126,23 +132,28 @@ export default function SearchAppBar({
               Skill Tree
             </Typography>
           </Box>
-          <form
+          <Box
+            component="form"
             style={{ flexGrow: 1, flexBasis: "45%" }}
             onSubmit={handleSearch}
           >
-            <Search sx={{ width: "100%" }}>
-              <SearchIconWrapper>
+            <Search sx={{ width: "100%", mr: 0 }}>
+              <SearchIconWrapper sx={{ width: "10%" }}>
                 <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
+                disabled={
+                  graphName !== "Knowledge Network" &&
+                  graphName !== "Learning List"
+                }
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                sx={{ width: "auto" }}
+                sx={{ width: "100%" }}
               />
             </Search>
-          </form>
+          </Box>
         </Toolbar>
       </AnimatedAppBar>
     </Box>

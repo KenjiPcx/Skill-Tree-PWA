@@ -6,7 +6,8 @@ import Fade from "@material-ui/core/Fade";
 import Container from "@material-ui/core/Container";
 import { Theme } from "@material-ui/core/styles";
 
-import { ModalData } from "../App";
+import { ModalData } from "../Types";
+import { Skill } from "../utils/graphDataTransformer";
 import ModalUpdateForm from "./NodeModalData/ModalUpdateForm";
 import ModalAddForm from "./NodeModalData/ModalAddForm";
 import ModalDeleteNode from "./NodeModalData/ModalDeleteNode";
@@ -18,7 +19,7 @@ interface NodeOptionModalsProps {
   selectedNode: string;
   type: string;
   openModal: boolean;
-  skillsData: Map<string, any>;
+  skillsData: Map<string, Skill>;
   setModalData: React.Dispatch<React.SetStateAction<ModalData>>;
 }
 
@@ -60,6 +61,7 @@ function NodeOptionModals({
         return (
           <ModalUpdateForm
             selectedNode={selectedNode}
+            skillsData={skillsData}
             handleCloseModal={handleCloseModal}
           />
         );

@@ -19,7 +19,7 @@ const generateNode = (data: Skill) => {
     label: data.name,
   };
   if (data.imageURL) {
-    if (data.learning) {
+    if (data.usedFrequency === 0) {
       return { ...node, image: data.imageURL, opacity: 0.1 };
     } else {
       return { ...node, image: data.imageURL };
@@ -35,7 +35,7 @@ const generateEdge = (data: Skill) => {
     width: 1.5,
     arrowStrikethrough: false,
   };
-  if (data.learning) {
+  if (data.usedFrequency === 0) {
     return {
       ...edge,
       dashes: true,

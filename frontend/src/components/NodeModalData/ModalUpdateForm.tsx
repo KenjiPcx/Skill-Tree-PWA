@@ -1,58 +1,99 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
 import Fab from "@material-ui/core/Fab";
 import EditIcon from "@material-ui/icons/Edit";
-import { updateNode } from "../../firebase";
+import { updateNode, batchUpdateNodes } from "../../firebase";
+import { Skill } from "../../utils/graphDataTransformer";
+import { getAncestorNodes } from "../../utils/filterNodesData";
 
 interface ModalUpdateFormProps {
   selectedNode: string;
+  skillsData: Map<string, Skill>;
   handleCloseModal: () => void;
 }
 
 function ModalUpdataForm({
   selectedNode,
+  skillsData,
   handleCloseModal,
 }: ModalUpdateFormProps) {
+  const isMounted = useRef<boolean | null>(null);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const skillData = skillsData.get(selectedNode) as Skill;
   const [parent, setParent] = useState("");
-  const [group, setGroup] = useState("");
+  const [group, setGroup] = useState(skillData?.group);
   const [imageURL, setImageURL] = useState("");
   const [yearStarted, setYearStarted] = useState("");
-  const [usedFrequency, setUsedFrequency] = useState("");
+  const [usedFrequency, setUsedFrequency] = useState(
+    skillData?.usedFrequency?.toString() as string
+  );
+  const [error, setError] = useState(false);
 
-  const handleUpdateNode = () => {
-    let skill: any = {
-      name: selectedNode,
-    };
-    if (parent !== "") {
-      skill.parent = parent;
-    }
-    if (group !== "") {
-      skill.group = group;
-    }
-    if (imageURL !== "") {
-      skill.imageURL = imageURL;
-    }
-    if (usedFrequency !== "") {
-      skill.usedFrequency = parseInt(usedFrequency);
-    }
-    if (yearStarted !== "") {
-      skill.yearStarted = yearStarted;
-    }
-    
-    setParent("");
-    setGroup("");
-    setImageURL("");
-    setYearStarted("");
-    setUsedFrequency("");
-    
-    updateNode(skill)
-      .then(() => {
+  const handleUpdateNode = async (e?: React.SyntheticEvent) => {
+    if (usedFrequency !== "" && !isNaN(parseInt(usedFrequency))) {
+      let skill: any = {
+        name: selectedNode,
+      };
+      if (parent !== "") {
+        skill.parent = parent;
+      }
+      if (group !== "") {
+        skill.group = group;
+      }
+      if (imageURL !== "") {
+        skill.imageURL = imageURL;
+      }
+      if (yearStarted !== "") {
+        skill.yearStarted = yearStarted;
+      }
+      if (usedFrequency !== "") {
+        skill.usedFrequency = parseInt(usedFrequency);
+        const frequencyGain =
+          parseInt(usedFrequency) - (skillData.usedFrequency as number);
+        const skills = getAncestorNodes(skillsData, selectedNode).map(
+          (skill) => {
+            return {
+              name: skill.name,
+              usedFrequency: (skill.usedFrequency as number) + frequencyGain,
+            };
+          }
+        );
+        await batchUpdateNodes(skills, skill).catch(console.log);
+      } else {
+        await updateNode(skill).catch(console.log);
+      }
+      if (isMounted.current) {
+        setParent("");
+        setGroup("");
+        setImageURL("");
+        setYearStarted("");
+        setUsedFrequency("");
         handleCloseModal();
-      })
-      .catch(console.log);
+      }
+    } else {
+      if (isMounted.current) {
+        setError(true);
+        setTimeout(() => {
+          setError(false);
+        }, 1500);
+      }
+    }
+  };
+
+  const handleUpdateWithEnter = (e: React.KeyboardEvent) => {
+    if (e.key !== "Enter") {
+      return;
+    }
+    handleUpdateNode();
   };
 
   const sx = {
@@ -71,13 +112,19 @@ function ModalUpdataForm({
       >
         Edit Node
       </Typography>
-      <Box component="form" style={{ width: "100%" }}>
+      <Box
+        style={{ width: "100%" }}
+        component="form"
+        onKeyPress={handleUpdateWithEnter}
+      >
         <TextField
           id="name"
           label="Skill Name"
           variant="filled"
           size="small"
-          disabled
+          InputProps={{
+            readOnly: true,
+          }}
           sx={{ ...sx, mb: 0 }}
           value={selectedNode}
         />
@@ -87,7 +134,7 @@ function ModalUpdataForm({
         <TextField
           id="parent"
           label="Parent Node"
-          variant="filled"
+          variant="outlined"
           size="small"
           sx={sx}
           value={parent}
@@ -108,15 +155,19 @@ function ModalUpdataForm({
           <MenuItem value="Subategory Label">Subcategory Label</MenuItem>
           <MenuItem value="Image">Image</MenuItem>
         </TextField>
-        <TextField
-          id="Image URL"
-          label="Image URL"
-          variant="filled"
-          size="small"
-          sx={sx}
-          value={imageURL}
-          onChange={(e) => setImageURL(e.target.value)}
-        />
+        {group === "Image" ? (
+          <TextField
+            id="Image URL"
+            label="Image URL"
+            variant="filled"
+            size="small"
+            sx={sx}
+            value={imageURL}
+            onChange={(e) => setImageURL(e.target.value)}
+          />
+        ) : (
+          ""
+        )}
         <div
           style={{
             marginTop: 10,
@@ -131,8 +182,9 @@ function ModalUpdataForm({
             variant="filled"
             size="small"
             sx={{ width: "47.5%" }}
-            value={usedFrequency.toString()}
+            value={usedFrequency}
             onChange={(e) => setUsedFrequency(e.target.value)}
+            error={error}
           />
           <TextField
             id="Year"

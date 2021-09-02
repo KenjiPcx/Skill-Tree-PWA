@@ -3,7 +3,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from "@material-ui/icons/Close";
 import Alert from "@material-ui/core/Alert";
-import { ErrorData } from "../App";
+import { ErrorData } from "../Types";
 
 interface ErrorSnackBarProps {
   errorMsg: string;

@@ -5,8 +5,10 @@ import {
   deleteDoc,
   updateDoc,
   setDoc,
+  writeBatch,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { Skill } from "./utils/graphDataTransformer";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -45,3 +47,20 @@ export const deleteNode = async (name: string) => {
     console.log("Failed To Delete Node");
   }
 };
+
+export const batchUpdateNodes = async (
+  skills: any[],
+  skill: any,
+) => {
+  try {
+    const batch = writeBatch(db);
+    batch.update(doc(db, "nodes", skill.name), skill);
+    skills.forEach((skill: any) => {
+      batch.update(doc(db, "nodes", skill.name), skill);
+    });
+    await batch.commit();
+  } catch (e) {
+    console.log("Failed To Batch Update", e);
+  }
+};
+
