@@ -182,7 +182,7 @@ function App() {
         };
       });
     }
-  }, [graphData.graphName, skillsData]);
+  }, [graphData.graphName, skillsData, search]);
 
   const memoTopAppBar = useMemo(() => {
     return (
