@@ -1,5 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import "./App.css";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -61,7 +67,7 @@ function App() {
     showSpeedDial: false,
   });
 
-  const handleSetScreen = () => {
+  const handleSetScreen = useCallback(() => {
     if (window.innerWidth > window.innerHeight) {
       setScreen((data) => {
         return {
@@ -87,7 +93,7 @@ function App() {
         };
       });
     }
-  };
+  }, []);
 
   const debouncedHandleResize = debounce(() => {
     handleSetScreen();
@@ -115,22 +121,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (skillsData.size === 0) return
-    validateSearch(skillsData);
+    if (skillsData.size === 0) return;
+    validateSearch();
     if (loading) {
-      setLoading(false)
+      setLoading(false);
     }
   }, [skillsData]);
 
   const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearch("");
-    validateSearch(skillsData);
+    validateSearch();
   };
 
-  const validateSearch = (data: Map<string, any>) => {
+  const validateSearch = useCallback(() => {
     const graphName = graphData.graphName;
-    const skillsArr = Array.from(data.values());
+    const skillsArr = Array.from(skillsData.values());
     const learntSkills = skillsArr.filter((skill) => skill.usedFrequency !== 0);
     let dataArr: any[] = [];
     if (graphName === "Knowledge Network") {
@@ -146,7 +152,7 @@ function App() {
           graph: graphDataTransformer(dataArr, "normal"),
         };
       });
-    } else if (data.get(search)) {
+    } else if (skillsData.get(search)) {
       const originEdge = {
         from: "Origin",
         to: search,
@@ -176,7 +182,7 @@ function App() {
         };
       });
     }
-  };
+  }, [graphData.graphName, skillsData]);
 
   const memoTopAppBar = useMemo(() => {
     return (
@@ -189,7 +195,7 @@ function App() {
         setGraphData={setGraphData}
       />
     );
-  }, [hideUI, search, graphData.graphName]);
+  }, [hideUI, search, graphData.graphName, handleSearch]);
 
   const memoErrorSnackbar = useMemo(() => {
     return (
