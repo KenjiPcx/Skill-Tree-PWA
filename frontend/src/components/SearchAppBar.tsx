@@ -93,7 +93,7 @@ export default function SearchAppBar({
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AnimatedAppBar position="absolute" style={topTranslation}>
+      <AnimatedAppBar position="fixed" style={topTranslation}>
         <Toolbar>
           <Box
             sx={{

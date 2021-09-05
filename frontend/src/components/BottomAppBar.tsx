@@ -132,7 +132,7 @@ export default function BottomAppBar({
   return (
     <>
       <AnimatedAppBar
-        position="absolute"
+        position="fixed"
         color="primary"
         sx={{ top: "auto", bottom: 0, zIndex: 1 }}
         style={botTranslation}
