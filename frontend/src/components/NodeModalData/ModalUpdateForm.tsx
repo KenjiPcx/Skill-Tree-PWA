@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -6,6 +6,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Fab from "@material-ui/core/Fab";
 import EditIcon from "@material-ui/icons/Edit";
 import Tooltip from "@material-ui/core/Tooltip";
+import Autocomplete from "@material-ui/core/Autocomplete";
 
 import { updateNode, batchUpdateNodes } from "../../firebase";
 import { Skill } from "../../Types";
@@ -31,13 +32,20 @@ function ModalUpdataForm({
   }, []);
 
   const skillData = skillsData.get(selectedNode) as Skill;
-  const [parent, setParent] = useState("");
-  const [group, setGroup] = useState(skillData?.group);
+  const [parent, setParent] = useState<string | null | undefined>(skillData.parent);
+  const [inputParent, setInputParent] = useState(skillData.parent);
+  const [group, setGroup] = useState(skillData.group);
   const [imageURL, setImageURL] = useState("");
   const [yearStarted, setYearStarted] = useState("");
   const [usedFrequency, setUsedFrequency] = useState(
     skillData?.usedFrequency?.toString() as string
   );
+
+  const parentOptions = useMemo(() => {
+    const parents = Array.from(skillsData.values()).map((skill) => skill.name);
+    parents.push("Origin");
+    return parents;
+  }, [skillsData]);
 
   const generateYearOptions = (rows: number) => {
     let year = 0;
@@ -73,9 +81,7 @@ function ModalUpdataForm({
     let skill: any = {
       name: selectedNode,
     };
-    if (parent !== "") {
-      skill.parent = parent;
-    }
+
     if (group !== "") {
       skill.group = group;
     }
@@ -85,6 +91,14 @@ function ModalUpdataForm({
     if (yearStarted !== "") {
       skill.yearStarted = yearStarted;
     }
+
+    if (parent !== "") {
+      skill.parent = parent;
+      if (skillData.parent) {
+        const oldParent = skillsData.get(skillData.parent) as Skill;
+      }
+    }
+
     const frequencyGain =
       parseInt(usedFrequency) - (skillData.usedFrequency as number);
     if (frequencyGain !== 0) {
@@ -122,6 +136,10 @@ function ModalUpdataForm({
     borderRadius: "20px",
   };
 
+  useEffect(() => {
+    console.log(parent)
+  }, [parent])
+
   return (
     <>
       <Typography
@@ -151,14 +169,32 @@ function ModalUpdataForm({
         <Typography variant="subtitle2" color="red" sx={{ mb: 0.5 }}>
           Name of node cannot be changed.
         </Typography>
-        <TextField
+        <Autocomplete
           id="parent"
-          label="Parent Node"
-          variant="filled"
-          size="small"
-          sx={sx}
+          disablePortal
+          options={parentOptions}
           value={parent}
-          onChange={(e) => setParent(e.target.value)}
+          onChange={(event: any, newParent: string | null) => {
+            setParent(newParent);
+          }}
+          inputValue={inputParent}
+          onInputChange={(event, newInputParent) => {
+            setInputParent(newInputParent);
+          }}
+          ListboxProps={{
+            style: {
+              maxHeight: 190,
+            },
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Parent Node"
+              variant="filled"
+              size="small"
+              sx={sx}
+            />
+          )}
         />
         <TextField
           id="Group"

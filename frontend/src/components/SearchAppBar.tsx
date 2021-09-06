@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { styled, alpha } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Box from "@material-ui/core/Box";
@@ -9,9 +9,11 @@ import InputBase from "@material-ui/core/InputBase";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import SearchIcon from "@material-ui/icons/Search";
 import Tooltip from "@material-ui/core/Tooltip";
-import { useSpring, animated } from "react-spring";
+import Autocomplete from "@material-ui/core/Autocomplete";
+
 import generateAppInfoNodes from "../utils/generateAppInfoNodes";
-import { GraphData } from "../Types";
+import { GraphData, Skill } from "../Types";
+import { useSpring, animated } from "react-spring";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -63,6 +65,7 @@ interface SearchAppBarProps {
     | "Learning Stats"
     | "Timeline"
     | "App Info";
+  skillsData: Map<string, Skill>;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
   handleSearch: (e: React.FormEvent<HTMLFormElement>) => void;
   setGraphData: React.Dispatch<React.SetStateAction<GraphData>>;
@@ -72,10 +75,20 @@ export default function SearchAppBar({
   hideUI,
   search,
   graphName,
+  skillsData,
   setSearch,
   handleSearch,
   setGraphData,
 }: SearchAppBarProps) {
+  const [inputSearch, setInputSearch] = useState("");
+
+  const options = useMemo(() => {
+    const names = Array.from(skillsData.values())
+      .filter((skill) => skill.usedFrequency && skill.usedFrequency > 0)
+      .map((skill) => skill.name);
+    return names;
+  }, [skillsData]);
+
   const topTranslation = useSpring({
     delay: hideUI ? 0 : 50,
     transform: hideUI ? `translateY(-100px)` : "translateY(0px)",
@@ -90,6 +103,12 @@ export default function SearchAppBar({
       };
     });
   };
+
+  useEffect(() => {
+    if (inputSearch === "") {
+      setSearch("");
+    }
+  }, [inputSearch]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -141,16 +160,42 @@ export default function SearchAppBar({
               <SearchIconWrapper sx={{ width: "10%" }}>
                 <SearchIcon />
               </SearchIconWrapper>
-              <StyledInputBase
+              <Autocomplete
+                sx={{ width: "100%" }}
                 disabled={
                   graphName !== "Knowledge Network" &&
                   graphName !== "Learning List"
                 }
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
+                disablePortal
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                sx={{ width: "100%" }}
+                getOptionLabel={(option) =>
+                  option !== inputSearch ? option : inputSearch
+                }
+                onChange={(event: any, newSearch: string | null) => {
+                  if (newSearch !== null) {
+                    setSearch(newSearch);
+                  }
+                }}
+                inputValue={inputSearch}
+                onInputChange={(event, newInputSearch) => {
+                  setInputSearch(newInputSearch);
+                }}
+                options={options}
+                ListboxProps={{
+                  style: {
+                    maxHeight: 190,
+                  },
+                }}
+                renderInput={(params) => {
+                  const { InputLabelProps, InputProps, ...rest } = params;
+                  return (
+                    <StyledInputBase
+                      placeholder="Search…"
+                      {...params.InputProps}
+                      {...rest}
+                    />
+                  );
+                }}
               />
             </Search>
           </Box>

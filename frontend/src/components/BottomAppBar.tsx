@@ -58,9 +58,20 @@ export default function BottomAppBar({
     transform: hideUI ? `translateY(150px)` : "translateY(0px)",
   });
 
+  const resetSelectedNode = () => {
+    setModalData((data: ModalData) => {
+      return {
+        ...data,
+        selectedNode: "",
+      };
+    });
+  };
+
   const resetInjections = () => {
     const skillsArr = Array.from(skillsData.values());
-    const learnedSkills = skillsArr.filter((skill) => skill.usedFrequency !== 0);
+    const learnedSkills = skillsArr.filter(
+      (skill) => skill.usedFrequency !== 0
+    );
     setGraphData((data: GraphData) => {
       return {
         graphName: "Knowledge Network",
@@ -68,12 +79,7 @@ export default function BottomAppBar({
         graph: graphDataTransformer(learnedSkills, "normal"),
       };
     });
-    setModalData((data: ModalData) => {
-      return {
-        ...data,
-        selectedNode: "",
-      };
-    });
+    resetSelectedNode();
   };
 
   const handleInjectStats = () => {
@@ -84,12 +90,7 @@ export default function BottomAppBar({
         graph: generateStatsNodes(skillsData),
       };
     });
-    setModalData((data: ModalData) => {
-      return {
-        ...data,
-        selectedNode: "",
-      };
-    });
+    resetSelectedNode();
   };
 
   const handleInjectLearningSkills = () => {
@@ -101,12 +102,7 @@ export default function BottomAppBar({
         graph: graphDataTransformer(skillsArr, "normal"),
       };
     });
-    setModalData((data: ModalData) => {
-      return {
-        ...data,
-        selectedNode: "",
-      };
-    });
+    resetSelectedNode();
   };
 
   const handleInjectTimeline = () => {
@@ -121,12 +117,7 @@ export default function BottomAppBar({
         graph: graph,
       };
     });
-    setModalData((data: ModalData) => {
-      return {
-        ...data,
-        selectedNode: "",
-      };
-    });
+    resetSelectedNode();
   };
 
   return (

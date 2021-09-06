@@ -173,14 +173,6 @@ function App() {
           graph: newGraph,
         };
       });
-    } else {
-      setErrorData((data: ErrorData) => {
-        return {
-          ...data,
-          errorMsg: "No Result Found",
-          showError: true,
-        };
-      });
     }
   }, [graphData.graphName, skillsData, search]);
 
@@ -190,12 +182,13 @@ function App() {
         hideUI={hideUI}
         search={search}
         graphName={graphData.graphName}
+        skillsData={skillsData}
         setSearch={setSearch}
         handleSearch={handleSearch}
         setGraphData={setGraphData}
       />
     );
-  }, [hideUI, search, graphData.graphName, handleSearch]);
+  }, [hideUI, search, graphData.graphName, handleSearch, skillsData]);
 
   const memoErrorSnackbar = useMemo(() => {
     return (
