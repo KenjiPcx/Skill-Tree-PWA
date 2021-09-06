@@ -82,12 +82,21 @@ export default function SearchAppBar({
 }: SearchAppBarProps) {
   const [inputSearch, setInputSearch] = useState("");
 
-  const options = useMemo(() => {
-    const names = Array.from(skillsData.values())
-      .filter((skill) => skill.usedFrequency && skill.usedFrequency > 0)
-      .map((skill) => skill.name);
-    return names;
-  }, [skillsData]);
+  const skillnames = useMemo(() => {
+    if (graphName === "Knowledge Network") {
+      const options = Array.from(skillsData.values())
+        .filter((skill) => skill.usedFrequency && skill.usedFrequency > 0)
+        .map((skill) => skill.name);
+      options.push("");
+      return options;
+    } else {
+      const options = Array.from(skillsData.values()).map(
+        (skill) => skill.name
+      );
+      options.push("");
+      return options;
+    }
+  }, [skillsData, graphName]);
 
   const topTranslation = useSpring({
     delay: hideUI ? 0 : 50,
@@ -168,9 +177,6 @@ export default function SearchAppBar({
                 }
                 disablePortal
                 value={search}
-                getOptionLabel={(option) =>
-                  option !== inputSearch ? option : inputSearch
-                }
                 onChange={(event: any, newSearch: string | null) => {
                   if (newSearch !== null) {
                     setSearch(newSearch);
@@ -180,7 +186,7 @@ export default function SearchAppBar({
                 onInputChange={(event, newInputSearch) => {
                   setInputSearch(newInputSearch);
                 }}
-                options={options}
+                options={skillnames}
                 ListboxProps={{
                   style: {
                     maxHeight: 190,

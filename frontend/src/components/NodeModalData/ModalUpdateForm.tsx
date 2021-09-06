@@ -32,18 +32,19 @@ function ModalUpdataForm({
   }, []);
 
   const skillData = skillsData.get(selectedNode) as Skill;
-  const [parent, setParent] = useState<string | null | undefined>(skillData.parent);
+  const [parent, setParent] = useState<string>(skillData.parent as string);
   const [inputParent, setInputParent] = useState(skillData.parent);
   const [group, setGroup] = useState(skillData.group);
   const [imageURL, setImageURL] = useState("");
   const [yearStarted, setYearStarted] = useState("");
   const [usedFrequency, setUsedFrequency] = useState(
-    skillData?.usedFrequency?.toString() as string
+    skillData.usedFrequency.toString()
   );
 
   const parentOptions = useMemo(() => {
     const parents = Array.from(skillsData.values()).map((skill) => skill.name);
     parents.push("Origin");
+    parents.push("");
     return parents;
   }, [skillsData]);
 
@@ -77,7 +78,7 @@ function ModalUpdataForm({
     });
   };
 
-  const handleUpdateNode = async (e?: React.SyntheticEvent) => {
+  const generateBaseNode = () => {
     let skill: any = {
       name: selectedNode,
     };
@@ -92,27 +93,55 @@ function ModalUpdataForm({
       skill.yearStarted = yearStarted;
     }
 
-    if (parent !== "") {
-      skill.parent = parent;
-      if (skillData.parent) {
-        const oldParent = skillsData.get(skillData.parent) as Skill;
-      }
-    }
+    return skill;
+  };
 
-    const frequencyGain =
-      parseInt(usedFrequency) - (skillData.usedFrequency as number);
-    if (frequencyGain !== 0) {
-      skill.usedFrequency = parseInt(usedFrequency);
-      const skills = getAncestorNodes(skillsData, selectedNode).map((skill) => {
+  const generateAncestors = (gain: number) => {
+    const newParent = skillsData.get(parent) as Skill;
+
+    const oldAncestorNodes = getAncestorNodes(skillsData, selectedNode);
+    const newAncestorNodes = getAncestorNodes(skillsData, parent);
+    newAncestorNodes.unshift(newParent);
+
+    const updatedOldAncestors = oldAncestorNodes
+      .filter((node) => !newAncestorNodes.includes(node))
+      .map((node) => {
         return {
-          name: skill.name,
-          usedFrequency: (skill.usedFrequency as number) + frequencyGain,
+          name: node.name,
+          usedFrequency: node.usedFrequency - skillData.usedFrequency,
         };
       });
-      await batchUpdateNodes(skills, skill).catch(console.log);
-    } else {
-      await updateNode(skill).catch(console.log);
+
+    const updatedNewAncestors = newAncestorNodes
+      .filter((node) => !oldAncestorNodes.includes(node))
+      .map((node) => {
+        return {
+          name: node.name,
+          usedFrequency: node.usedFrequency + skillData.usedFrequency + gain,
+        };
+      });
+
+    if (gain !== 0) {
+      const updatedCommonAncestors = oldAncestorNodes
+        .filter((node) => newAncestorNodes.includes(node))
+        .map((node) => {
+          return {
+            name: node.name,
+            usedFrequency: node.usedFrequency + gain,
+          };
+        });
+
+      return [
+        ...updatedOldAncestors,
+        ...updatedCommonAncestors,
+        ...updatedNewAncestors,
+      ];
     }
+
+    return [...updatedOldAncestors, ...updatedNewAncestors];
+  };
+
+  const handleCleanUp = () => {
     if (isMounted.current) {
       setParent("");
       setGroup("");
@@ -121,6 +150,36 @@ function ModalUpdataForm({
       setUsedFrequency("");
       handleCloseModal();
     }
+  };
+
+  const handleUpdateNode = async (e?: React.SyntheticEvent) => {
+    let skill = generateBaseNode();
+
+    const frequencyGain = parseInt(usedFrequency) - skillData.usedFrequency;
+
+    if (parent !== skillData.parent && frequencyGain !== 0) {
+      skill.parent = parent;
+      skill.usedFrequency = parseInt(usedFrequency);
+      const skills = generateAncestors(frequencyGain);
+      await batchUpdateNodes(skills, skill).catch(console.log);
+    } else if (parent !== skillData.parent) {
+      skill.parent = parent;
+      const skills = generateAncestors(0);
+      await batchUpdateNodes(skills, skill).catch(console.log);
+    } else if (frequencyGain !== 0) {
+      skill.usedFrequency = parseInt(usedFrequency);
+      const skills = getAncestorNodes(skillsData, selectedNode).map((skill) => {
+        return {
+          name: skill.name,
+          usedFrequency: skill.usedFrequency + frequencyGain,
+        };
+      });
+      await batchUpdateNodes(skills, skill).catch(console.log);
+    } else {
+      await updateNode(skill).catch(console.log);
+    }
+
+    handleCleanUp();
   };
 
   const handleUpdateWithEnter = (e: React.KeyboardEvent) => {
@@ -135,10 +194,6 @@ function ModalUpdataForm({
     my: 1,
     borderRadius: "20px",
   };
-
-  useEffect(() => {
-    console.log(parent)
-  }, [parent])
 
   return (
     <>
@@ -175,7 +230,9 @@ function ModalUpdataForm({
           options={parentOptions}
           value={parent}
           onChange={(event: any, newParent: string | null) => {
-            setParent(newParent);
+            if (newParent) {
+              setParent(newParent);
+            }
           }}
           inputValue={inputParent}
           onInputChange={(event, newInputParent) => {

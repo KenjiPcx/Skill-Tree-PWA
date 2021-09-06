@@ -33,6 +33,17 @@ export type Skill = {
   name: string;
   parent?: string;
   group: string;
+  usedFrequency: number;
+  imageURL?: string;
+  yearStarted?: string;
+};
+
+export type RelaxedSkill = {
+  learning?: boolean;
+  id?: string;
+  name: string;
+  parent?: string;
+  group: string;
   usedFrequency?: number;
   imageURL?: string;
   yearStarted?: string;
@@ -65,3 +76,8 @@ export type InfoNode = {
   usedFrequency?: number;
   imageURL?: string;
 };
+
+export interface FieldData {
+  usedFrequency: number;
+  favourites: string[];
+}

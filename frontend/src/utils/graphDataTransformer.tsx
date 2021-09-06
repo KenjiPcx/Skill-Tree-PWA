@@ -1,7 +1,7 @@
 import KenjiImg from "../assets/kenji.png";
-import { Skill } from "../Types"
+import { RelaxedSkill } from "../Types"
 
-const generateNode = (data: Skill) => {
+const generateNode = (data: RelaxedSkill) => {
   const node = {
     id: data.id ? data.id : data.name,
     group: data.group,
@@ -17,7 +17,7 @@ const generateNode = (data: Skill) => {
   return node;
 };
 
-const generateEdge = (data: Skill) => {
+const generateEdge = (data: RelaxedSkill) => {
   const edge = {
     from: data.parent,
     to: data.id ? data.id : data.name,
@@ -33,7 +33,7 @@ const generateEdge = (data: Skill) => {
   return edge;
 };
 
-const generateYearEdge = (data: Skill) => {
+const generateYearEdge = (data: RelaxedSkill) => {
   if (data.yearStarted) {
     return {
       from: data.yearStarted,
@@ -51,7 +51,7 @@ const generateYearEdge = (data: Skill) => {
 };
 
 const graphDataTransformer = (
-  graphData: Skill[],
+  graphData: RelaxedSkill[],
   mode: "timeline" | "normal"
 ) => {
   const originNode = {

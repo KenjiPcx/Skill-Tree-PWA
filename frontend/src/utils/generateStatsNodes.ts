@@ -1,20 +1,16 @@
 import graphDataTransformer from "./graphDataTransformer";
 import filterNodesData, { pushChildrenNodes } from "./filterNodesData";
-import { Skill } from "../Types";
-interface FieldData {
-  usedFrequency: number;
-  favourites: string[];
-}
+import { Skill, RelaxedSkill, FieldData } from "../Types";
 
 const generateFieldsStats = (fields: string[], skillsData: Skill[]) => {
-  const resNodes: Skill[] = [];
+  const resNodes: RelaxedSkill[] = [];
 
   fields.forEach((field) => {
-    const skillChildren: Skill[] = [];
+    const skillChildren: RelaxedSkill[] = [];
     pushChildrenNodes(skillsData, field, skillChildren);
 
     if (skillChildren.length !== 0) {
-      const labelNode: Skill = {
+      const labelNode: RelaxedSkill = {
         id: `${field} Field`,
         name: field,
         group: "Subcategory Label",
@@ -23,7 +19,7 @@ const generateFieldsStats = (fields: string[], skillsData: Skill[]) => {
       };
       resNodes.push(labelNode);
 
-      const valueNode: Skill = {
+      const valueNode: RelaxedSkill = {
         id: `${field} No Of Skills`,
         name: ` ${skillChildren.length}`,
         group: "Stats Node",
@@ -117,7 +113,7 @@ const generateFavStack = (
   skills: Map<string, any>
 ) => {
   const fields = ["Frontend Dev", "Backend Dev"];
-  const resNodes: Skill[] = [];
+  const resNodes: RelaxedSkill[] = [];
 
   fields.forEach((field) => {
     const fieldData = fieldsData.get(field);
@@ -166,7 +162,7 @@ const generateStatsNodes = (skills: Map<string, Skill>) => {
     });
   });
 
-  const nodes: Skill[] = [
+  const nodes: RelaxedSkill[] = [
     // No Of Skills
     {
       name: "No Of Skills",
