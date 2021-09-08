@@ -164,7 +164,7 @@ function ModalOriginNode({ skillsData }: ModalOriginNodeProps) {
         }
       </Typography>
       <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: "bold" }}>
-        Experience: {totalUsedFreq}Exp
+        Experience: {totalUsedFreq} Exp
       </Typography>
       <Box component="form" onSubmit={handleAuth} sx={{ width: "85%" }}>
         {showTextField ? (

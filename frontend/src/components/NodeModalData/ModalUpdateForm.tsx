@@ -98,11 +98,9 @@ function ModalUpdataForm({
 
   const generateAncestors = (gain: number) => {
     const newParent = skillsData.get(parent) as Skill;
-
     const oldAncestorNodes = getAncestorNodes(skillsData, selectedNode);
     const newAncestorNodes = getAncestorNodes(skillsData, parent);
     newAncestorNodes.unshift(newParent);
-
     const updatedOldAncestors = oldAncestorNodes
       .filter((node) => !newAncestorNodes.includes(node))
       .map((node) => {
@@ -111,7 +109,6 @@ function ModalUpdataForm({
           usedFrequency: node.usedFrequency - skillData.usedFrequency,
         };
       });
-
     const updatedNewAncestors = newAncestorNodes
       .filter((node) => !oldAncestorNodes.includes(node))
       .map((node) => {
@@ -120,7 +117,6 @@ function ModalUpdataForm({
           usedFrequency: node.usedFrequency + skillData.usedFrequency + gain,
         };
       });
-
     if (gain !== 0) {
       const updatedCommonAncestors = oldAncestorNodes
         .filter((node) => newAncestorNodes.includes(node))

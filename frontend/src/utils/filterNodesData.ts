@@ -8,6 +8,9 @@ export const getAncestorNodes = (
 
   let currentSkill = skillsData.get(skillName);
   let parent = currentSkill?.parent as string;
+  if (parent === skillName) {
+    return returnArr
+  }
   while (parent !== "Origin") {
     currentSkill = skillsData.get(parent);
     if (currentSkill) {
@@ -17,7 +20,7 @@ export const getAncestorNodes = (
       break;
     }
   }
-
+  
   return returnArr;
 };
 
