@@ -102,7 +102,10 @@ function ModalUpdataForm({
     const newAncestorNodes = getAncestorNodes(skillsData, parent);
     newAncestorNodes.unshift(newParent);
     const updatedOldAncestors = oldAncestorNodes
-      .filter((node) => !newAncestorNodes.includes(node))
+      .filter(
+        (node) =>
+          !newAncestorNodes.map((newNode) => newNode.name).includes(node.name)
+      )
       .map((node) => {
         return {
           name: node.name,
@@ -110,7 +113,10 @@ function ModalUpdataForm({
         };
       });
     const updatedNewAncestors = newAncestorNodes
-      .filter((node) => !oldAncestorNodes.includes(node))
+      .filter(
+        (node) =>
+          !oldAncestorNodes.map((oldNode) => oldNode.name).includes(node.name)
+      )
       .map((node) => {
         return {
           name: node.name,
@@ -149,6 +155,10 @@ function ModalUpdataForm({
   };
 
   const handleUpdateNode = async (e?: React.SyntheticEvent) => {
+    if (parent === selectedNode) {
+      return 
+    }
+    
     let skill = generateBaseNode();
 
     const frequencyGain = parseInt(usedFrequency) - skillData.usedFrequency;

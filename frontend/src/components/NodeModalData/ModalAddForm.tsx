@@ -40,6 +40,13 @@ function ModalAddForm({ selectedNode, handleCloseModal }: ModalAddFormProps) {
   };
 
   const handleAddNode = (e?: React.SyntheticEvent) => {
+    if (name === selectedNode) {
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 1500);
+      return;
+    }
     if (name !== "" && group !== "") {
       e?.preventDefault();
       const skill = {

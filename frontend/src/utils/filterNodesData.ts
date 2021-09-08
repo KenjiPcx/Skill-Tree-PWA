@@ -8,14 +8,18 @@ export const getAncestorNodes = (
 
   let currentSkill = skillsData.get(skillName);
   let parent = currentSkill?.parent as string;
+
   if (parent === skillName) {
     return returnArr
   }
-  while (parent !== "Origin") {
+  
+  let counter = 0
+  while (parent !== "Origin" && counter < 10) {
     currentSkill = skillsData.get(parent);
     if (currentSkill) {
       parent = currentSkill.parent as string;
       returnArr.push(currentSkill);
+      counter += 1
     } else {
       break;
     }
