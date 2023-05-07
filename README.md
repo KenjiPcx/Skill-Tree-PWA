@@ -4,7 +4,7 @@
 
 Skilltree is an app that brings the concept of RPG skill trees into real life. I grew up with final fantasy X, the sphere grid system was very mesmerizing, so I thought why not make it a real thing? and so I made this. It's a way for users to set goals and track their progress in a fun and interactive way.
 
-https://user-images.githubusercontent.com/56083944/236653668-4b091859-77dd-4e37-9d78-41cb12b8269d.mp4
+https://user-images.githubusercontent.com/56083944/236654193-bfb25c93-913c-48b4-a277-19d32bf5ec1a.mp4
 
 > Edit (7/5/2023): This app right here was my first real dev project, I got to implement every feature I wanted to learned and try out through this app, and it looks quite nice for a first project
 
